@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Neer Sentinel — Durva Research Lab</title>
+<meta name="description" content="Passive permanent-magnet wastewater purification for industrial facilities. Cut ETP power demand up to 60%, shrink cycle time from hours to minutes, and move toward Net-Zero." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          ink:      '#FFFFFF',
+          surface:  '#F3F8FD',
+          surface2: '#E8F2FC',
+          line:     'rgba(15,35,65,0.10)',
+          emerald:  { DEFAULT:'#0EA5E9', bright:'#0284C7', dim:'#BAE6FD' },
+          offwhite: '#0B1A2E',
+          muted:    '#5B6B82',
+          coral:    '#C2410C',
+        },
+        fontFamily: {
+          display: ['"Plus Jakarta Sans"','system-ui','sans-serif'],
+          body: ['"IBM Plex Sans"','system-ui','sans-serif'],
+          mono: ['"IBM Plex Mono"','ui-monospace','SFMono-Regular','monospace'],
+        },
+      }
+    }
+  }
+</script>
+<style>
+  :root { color-scheme: light; }
+  html, body { background:#FFFFFF; }
+  body { font-family:'IBM Plex Sans', system-ui, sans-serif; }
+  .font-display { font-family:'Plus Jakarta Sans', system-ui, sans-serif; }
+  .font-mono { font-family:'IBM Plex Mono', ui-monospace, monospace; }
+
+  h1, h2, h3 { text-wrap: balance; }
+
+  .bg-grid {
+    background-image:
+      radial-gradient(130% 100% at 18% -15%, #EAF7FF 0%, #BEE7FB 42%, #82CEF3 100%),
+      linear-gradient(rgba(2,54,108,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(2,54,108,0.035) 1px, transparent 1px);
+    background-size: 100% 100%, 48px 48px, 48px 48px;
+    background-position: 0 0, 0 0, 0 0;
+    animation: water-drift 22s ease-in-out infinite alternate;
+  }
+  @keyframes water-drift {
+    0%   { background-position: 0% 0%, 0 0, 0 0; }
+    100% { background-position: 4% 3%, 0 0, 0 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .bg-grid { animation: none; }
+  }
+
+  .wave-divider { display: block; width: 100%; height: auto; }
+
+  .glow-text {
+    background: linear-gradient(90deg, #0EA5E9 0%, #0369A1 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .card-surface {
+    background: linear-gradient(165deg, #FFFFFF 0%, #F3F8FD 100%);
+    border: 1px solid rgba(15,35,65,0.08);
+    box-shadow: 0 20px 44px -30px rgba(15,35,65,0.28);
+  }
+
+  .card-surface:hover { border-color: rgba(14,165,233,0.45); }
+
+  /* Custom range sliders */
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #0EA5E9 var(--fill, 50%), rgba(15,35,65,0.12) var(--fill, 50%));
+    outline: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: #FFFFFF;
+    border: 3px solid #0EA5E9;
+    box-shadow: 0 0 0 4px rgba(14,165,233,0.18);
+    cursor: pointer;
+    margin-top: -1px;
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: #FFFFFF;
+    border: 3px solid #0EA5E9;
+    box-shadow: 0 0 0 4px rgba(14,165,233,0.18);
+    cursor: pointer;
+    border: none;
+  }
+  input[type="range"]::-moz-range-track { height: 6px; border-radius: 999px; background: transparent; }
+
+  input[type="range"]:focus-visible::-webkit-slider-thumb { outline: 2px solid #0EA5E9; outline-offset: 2px; }
+
+  .tabular { font-variant-numeric: tabular-nums; }
+
+  /* Hero flow animation */
+  .flow-line { stroke-dasharray: 6 10; animation: flow 1.4s linear infinite; }
+  @keyframes flow { to { stroke-dashoffset: -16; } }
+  .pulse-dot { animation: pulse-op 2.4s ease-in-out infinite; }
+  @keyframes pulse-op { 0%,100% { opacity: .35; } 50% { opacity: 1; } }
+
+  /* Particles drawn into the reactor and captured on the magnet matrix */
+  .inflow-particle { animation: particle-in 2.6s cubic-bezier(.4,0,.2,1) infinite; }
+  @keyframes particle-in {
+    0%   { transform: translateX(0); opacity: 0; }
+    8%   { opacity: .95; }
+    78%  { opacity: .95; }
+    100% { transform: translateX(158px); opacity: 0; }
+  }
+  .trapped-particle { animation: trapped-jitter 1.8s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+  @keyframes trapped-jitter { 0%,100% { transform: translate(0,0); } 50% { transform: translate(0.6px,-0.6px); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .flow-line, .pulse-dot, .inflow-particle, .trapped-particle { animation: none; }
+  }
+
+  a:focus-visible, button:focus-visible, input:focus-visible {
+    outline: 2px solid #0EA5E9;
+    outline-offset: 2px;
+  }
+
+  .nav-link { position: relative; }
+  .nav-link::after {
+    content: ""; position: absolute; left:0; bottom:-6px; height:1px; width:0;
+    background:#0EA5E9; transition: width .2s ease;
+  }
+  .nav-link:hover::after { width: 100%; }
+</style>
+</head>
+<body class="bg-ink text-offwhite antialiased">
+
+  <!-- NAV -->
+  <header class="fixed top-0 inset-x-0 z-50 border-b border-line bg-ink/80 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
+      <a href="#top" class="flex items-center gap-2.5 shrink-0">
+        <img src="durva-logo-icon.png" alt="Durva Research Lab" class="w-8 h-8 object-contain" />
+        <span class="font-display font-bold text-[15px] tracking-tight leading-none">Neer Sentinel</span>
+      </a>
+      <nav class="hidden md:flex items-center gap-8 font-body font-semibold text-[12.5px] tracking-tight text-muted">
+        <a href="#problem" class="nav-link hover:text-offwhite transition-colors">The Problem</a>
+        <a href="#value" class="nav-link hover:text-offwhite transition-colors">Why Neer Sentinel</a>
+        <a href="#metrics" class="nav-link hover:text-offwhite transition-colors">Performance</a>
+        <a href="#calculator" class="nav-link hover:text-offwhite transition-colors">Impact Calculator</a>
+        <a href="#mission" class="nav-link hover:text-offwhite transition-colors">Mission</a>
+      </nav>
+      <a href="#demo" class="shrink-0 font-body font-semibold text-[13px] px-4 py-2 rounded-full bg-emerald text-ink hover:bg-emerald-bright transition-colors">
+        Request a Pilot Demo
+      </a>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- HERO -->
+    <section class="relative overflow-hidden bg-grid pt-32 pb-20 sm:pt-40 sm:pb-28 px-5 sm:px-8">
+      <div aria-hidden="true" class="pointer-events-none absolute -top-40 right-[-10%] w-[560px] h-[560px] rounded-full bg-emerald/10 blur-3xl"></div>
+      <div aria-hidden="true" class="pointer-events-none absolute top-1/3 left-[-8%] w-[420px] h-[420px] rounded-full bg-emerald-dim/20 blur-3xl"></div>
+      <p aria-hidden="true" class="pointer-events-none select-none absolute -bottom-10 sm:-bottom-16 left-1/2 -translate-x-1/2 w-full text-center font-display font-black text-[22vw] sm:text-[11rem] leading-none tracking-tight text-offwhite/[0.035] whitespace-nowrap">SENTINEL</p>
+      <div class="max-w-7xl mx-auto relative grid lg:grid-cols-[1.1fr_0.9fr] gap-14 items-center">
+        <div>
+          <p class="font-body font-bold text-[12px] uppercase tracking-[0.22em] text-emerald-bright mb-6 flex items-center gap-2">
+            <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-bright pulse-dot"></span>
+            Durva Research Lab &middot; Industrial Water Systems
+          </p>
+          <h1 class="font-display font-extrabold text-[2.4rem] sm:text-5xl lg:text-[3.4rem] leading-[1.06] tracking-tight mb-6">
+            The Next Generation of <span class="glow-text">Industrial Water Purification.</span>
+          </h1>
+          <p class="font-body text-[16.5px] sm:text-lg text-muted max-w-xl leading-relaxed mb-9">
+            Purify industrial effluent <span class="font-semibold text-offwhite">instantly</span> with our revolutionary, <span class="font-semibold text-offwhite">zero-power magnetic reactor</span>—now supercharged by autonomous intelligence. We cut wastewater treatment time by <span class="font-semibold text-offwhite">over 95%</span> and operating costs by <span class="font-semibold text-offwhite">75%</span>, while shrinking your factory's environmental footprint, completely eradicating <span class="font-semibold text-offwhite">biological greenhouse gas emissions</span>, and driving your facility straight to <span class="font-semibold text-offwhite">Net-Zero ready</span>.
+          </p>
+          <div class="flex flex-wrap items-center gap-4 mb-10">
+            <a href="#demo" class="font-body font-semibold text-[15px] px-6 py-3.5 rounded-full bg-emerald text-ink hover:bg-emerald-bright transition-colors shadow-[0_0_0_1px_rgba(14,165,233,0.4)]">
+              Request a Pilot Demo
+            </a>
+            <a href="#case-study" class="font-body font-semibold text-[15px] px-6 py-3.5 rounded-full border border-line text-offwhite hover:border-emerald/60 hover:text-emerald-bright transition-colors">
+              Download Case Study
+            </a>
+          </div>
+          <div class="flex flex-wrap gap-x-8 gap-y-3 font-mono text-[12px] text-muted uppercase tracking-wide">
+            <span><span class="text-emerald-bright">0 kWh</span> separation energy</span>
+            <span><span class="text-emerald-bright">&lt;15 min</span> cycle time</span>
+            <span><span class="text-emerald-bright">Net-Zero</span> ready</span>
+          </div>
+        </div>
+
+        <!-- Schematic -->
+        <div>
+        <div class="card-surface rounded-2xl p-5 sm:p-6 shadow-[0_40px_80px_-30px_rgba(0,0,0,0.7)]">
+          <p class="font-mono text-[11px] uppercase tracking-[0.15em] text-muted mb-4">Live Process Schematic — NS-200 Unit</p>
+          <svg viewBox="0 0 560 300" class="w-full h-auto" role="img" aria-label="Diagram showing untreated effluent entering the Neer Sentinel chamber, passing through a passive permanent magnet core, and exiting as purified output.">
+            <!-- inlet pipe -->
+            <rect x="0" y="128" width="130" height="44" rx="4" fill="#1C140D" stroke="rgba(242,132,107,0.4)"/>
+            <line x1="10" y1="150" x2="120" y2="150" stroke="#F2846B" stroke-width="3" class="flow-line" opacity="0.8"/>
+            <text x="8" y="115" fill="#C99A8C" font-size="11" font-family="IBM Plex Mono, monospace">UNTREATED EFFLUENT</text>
+
+            <!-- chamber -->
+            <rect x="140" y="90" width="270" height="120" rx="10" fill="#0B1A24" stroke="#0EA5E9" stroke-width="1.6"/>
+            <text x="156" y="76" fill="#8CA7B5" font-size="11" font-family="IBM Plex Mono, monospace">HGMS MAGNETIC REACTOR</text>
+
+            <!-- particles drawn in from the inlet, captured at the matrix face -->
+            <g fill="#F2846B">
+              <circle class="inflow-particle" cx="6" cy="140" r="2.6" style="animation-delay:0s"/>
+              <circle class="inflow-particle" cx="6" cy="150" r="2" style="animation-delay:.6s"/>
+              <circle class="inflow-particle" cx="6" cy="160" r="2.8" style="animation-delay:1.2s"/>
+              <circle class="inflow-particle" cx="6" cy="145" r="2.2" style="animation-delay:1.8s"/>
+            </g>
+
+            <!-- magnet bars -->
+            <g stroke="#38BDF8" stroke-width="2.2">
+              <line x1="162" y1="118" x2="388" y2="118"/>
+              <line x1="162" y1="148" x2="388" y2="148"/>
+              <line x1="162" y1="178" x2="388" y2="178"/>
+            </g>
+            <g fill="none" stroke="#38BDF8" stroke-width="1" opacity="0.45">
+              <path d="M170 118 q10 10 0 20"/>
+              <path d="M220 118 q10 10 0 20"/>
+              <path d="M270 118 q10 10 0 20"/>
+              <path d="M320 118 q10 10 0 20"/>
+              <path d="M370 118 q10 10 0 20"/>
+              <path d="M170 148 q10 10 0 20"/>
+              <path d="M220 148 q10 10 0 20"/>
+              <path d="M270 148 q10 10 0 20"/>
+              <path d="M320 148 q10 10 0 20"/>
+              <path d="M370 148 q10 10 0 20"/>
+            </g>
+
+            <!-- effluent particles trapped across the full length of the magnet matrix -->
+            <g fill="#F2846B">
+              <circle class="trapped-particle" cx="167" cy="116" r="2.6" style="animation-delay:.1s"/>
+              <circle class="trapped-particle" cx="176" cy="120" r="2.2" style="animation-delay:.5s"/>
+              <circle class="trapped-particle" cx="168" cy="146" r="2.8" style="animation-delay:.2s"/>
+              <circle class="trapped-particle" cx="178" cy="150" r="2" style="animation-delay:.9s"/>
+              <circle class="trapped-particle" cx="169" cy="176" r="2.4" style="animation-delay:.4s"/>
+              <circle class="trapped-particle" cx="180" cy="180" r="2.2" style="animation-delay:1.1s"/>
+              <circle class="trapped-particle" cx="188" cy="117" r="1.8" opacity=".85" style="animation-delay:.7s"/>
+              <circle class="trapped-particle" cx="192" cy="148" r="2" opacity=".85" style="animation-delay:.3s"/>
+              <circle class="trapped-particle" cx="190" cy="178" r="1.7" opacity=".85" style="animation-delay:1.3s"/>
+              <circle cx="206" cy="119" r="1.4" opacity=".55"/>
+              <circle cx="212" cy="149" r="1.4" opacity=".55"/>
+              <circle cx="208" cy="177" r="1.3" opacity=".5"/>
+              <circle cx="228" cy="118" r="1.6" opacity=".5"/>
+              <circle class="trapped-particle" cx="236" cy="150" r="2.1" opacity=".7" style="animation-delay:.6s"/>
+              <circle cx="230" cy="179" r="1.4" opacity=".45"/>
+              <circle class="trapped-particle" cx="258" cy="117" r="2" opacity=".65" style="animation-delay:1s"/>
+              <circle cx="266" cy="149" r="1.6" opacity=".5"/>
+              <circle class="trapped-particle" cx="262" cy="178" r="1.9" opacity=".6" style="animation-delay:.8s"/>
+              <circle cx="288" cy="119" r="1.5" opacity=".45"/>
+              <circle class="trapped-particle" cx="296" cy="148" r="2.2" opacity=".6" style="animation-delay:.2s"/>
+              <circle cx="292" cy="179" r="1.4" opacity=".4"/>
+              <circle class="trapped-particle" cx="318" cy="117" r="1.8" opacity=".55" style="animation-delay:1.4s"/>
+              <circle cx="326" cy="149" r="1.5" opacity=".45"/>
+              <circle class="trapped-particle" cx="320" cy="178" r="2" opacity=".55" style="animation-delay:.5s"/>
+              <circle cx="348" cy="118" r="1.4" opacity=".4"/>
+              <circle class="trapped-particle" cx="356" cy="149" r="1.9" opacity=".5" style="animation-delay:1.2s"/>
+              <circle cx="352" cy="178" r="1.3" opacity=".35"/>
+              <circle cx="376" cy="118" r="1.2" opacity=".3"/>
+              <circle cx="380" cy="148" r="1.2" opacity=".3"/>
+              <circle cx="378" cy="178" r="1.1" opacity=".28"/>
+            </g>
+            <text x="166" y="202" fill="#C99A8C" font-size="9" font-family="IBM Plex Mono, monospace" letter-spacing="0.5" opacity="0.8">CAPTURED POLLUTANTS</text>
+
+            <!-- zero power badge -->
+            <g transform="translate(205,224)">
+              <rect x="0" y="0" width="140" height="30" rx="15" fill="#1E3A74" opacity="0.25" stroke="#38BDF8" stroke-width="1"/>
+              <circle cx="16" cy="15" r="4" fill="#38BDF8" class="pulse-dot"/>
+              <text x="28" y="19" fill="#DCEAFE" font-size="12" font-family="IBM Plex Mono, monospace">0 kWh REQUIRED</text>
+            </g>
+
+            <!-- outlet pipe -->
+            <rect x="410" y="128" width="150" height="44" rx="4" fill="#11213D" stroke="rgba(14,165,233,0.5)"/>
+            <line x1="420" y1="150" x2="548" y2="150" stroke="#38BDF8" stroke-width="3" class="flow-line"/>
+            <text x="416" y="115" fill="#7DB4F7" font-size="11" font-family="IBM Plex Mono, monospace">PURIFIED OUTPUT</text>
+          </svg>
+        </div>
+        <div aria-hidden="true" class="hidden lg:block -mt-10 mx-6 h-10 rounded-[50%] bg-emerald/15 blur-2xl"></div>
+        </div>
+      </div>
+      <svg aria-hidden="true" class="wave-divider absolute -bottom-px left-0" viewBox="0 0 1440 72" preserveAspectRatio="none">
+        <path d="M0,24 C240,64 480,64 720,32 C960,0 1200,0 1440,32 L1440,72 L0,72 Z" fill="#FFFFFF"/>
+      </svg>
+    </section>
+
+    <!-- PROBLEM -->
+    <section id="problem" class="relative overflow-hidden px-5 sm:px-8 py-20 sm:py-28 border-b border-line bg-surface/30">
+      <div aria-hidden="true" class="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[420px] bg-emerald/5 blur-3xl rounded-full"></div>
+      <div class="max-w-5xl mx-auto relative text-center">
+        <p class="font-body font-bold text-[12px] uppercase tracking-[0.22em] text-emerald-bright mb-5">The Problem</p>
+        <h2 class="font-display font-bold text-3xl sm:text-4xl tracking-tight mb-14">The industrial water crisis, in numbers.</h2>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-6 gap-5 text-left mb-14">
+          <div class="card-surface rounded-2xl p-7 lg:col-span-2">
+            <span class="block font-mono text-4xl sm:text-[2.4rem] font-semibold glow-text tabular leading-none mb-4">$400B</span>
+            <p class="font-body text-[14px] text-muted leading-snug">Lost annually to the economic cost of contaminated water</p>
+          </div>
+          <div class="card-surface rounded-2xl p-7 lg:col-span-2">
+            <span class="block font-mono text-4xl sm:text-[2.4rem] font-semibold glow-text tabular leading-none mb-4">&gt;80%</span>
+            <p class="font-body text-[14px] text-muted leading-snug">Of industrial wastewater worldwide is discharged back into the environment untreated</p>
+          </div>
+          <div class="card-surface rounded-2xl p-7 lg:col-span-2">
+            <span class="block font-mono text-4xl sm:text-[2.4rem] font-semibold glow-text tabular leading-none mb-4">200+</span>
+            <p class="font-body text-[14px] text-muted leading-snug">New emerging contaminants identified in industrial water systems since 2015</p>
+          </div>
+          <div class="card-surface rounded-2xl p-7 lg:col-span-2 lg:col-start-2">
+            <span class="block font-mono text-4xl sm:text-[2.4rem] font-semibold glow-text tabular leading-none mb-4">70%+</span>
+            <p class="font-body text-[14px] text-muted leading-snug">Of industrial wastewater in developing economies is discharged without any treatment</p>
+          </div>
+          <div class="card-surface rounded-2xl p-7 lg:col-span-2">
+            <span class="block font-mono text-4xl sm:text-[2.4rem] font-semibold glow-text tabular leading-none mb-4">6–24 hrs</span>
+            <p class="font-body text-[14px] text-muted leading-snug">Still the average cycle time for the conventional ETPs most facilities run today</p>
+          </div>
+        </div>
+
+        <span aria-hidden="true" class="inline-block w-10 h-px bg-emerald/50 mb-8"></span>
+        <p class="font-display text-[1.2rem] sm:text-[1.4rem] italic text-offwhite leading-relaxed max-w-2xl mx-auto">
+          Traditional effluent treatment wasn't built for the scale — or the urgency — the industry needs today.
+        </p>
+        <p class="font-mono text-[11px] text-muted mt-6">Sources: World Bank, UNEP, EPA — commonly cited industry estimates</p>
+      </div>
+    </section>
+
+    <!-- VALUE PROP -->
+    <section id="value" class="px-5 sm:px-8 py-20 sm:py-28" style="background:#F2F7FC;">
+      <div class="max-w-7xl mx-auto">
+        <div class="max-w-2xl mb-14">
+          <p class="font-body font-bold text-[12px] uppercase tracking-[0.22em] mb-4" style="color:#0284C7;">Why Factories Switch</p>
+          <h2 class="font-display font-bold text-3xl sm:text-4xl tracking-tight" style="color:#0B1A2E;">Built for the factory floor, not the brochure.</h2>
+        </div>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-6 gap-5">
+          <div class="rounded-2xl p-8 lg:col-span-2" style="background:#FFFFFF; border:1px solid rgba(11,26,46,0.08); box-shadow:0 20px 40px -26px rgba(11,26,46,0.22);">
+            <svg width="34" height="34" viewBox="0 0 34 34" fill="none" class="mb-6" aria-hidden="true">
+              <path d="M5 5v8M5 5h8" stroke="#0284C7" stroke-width="2" stroke-linecap="round"/>
+              <path d="M29 29v-8M29 29h-8" stroke="#0284C7" stroke-width="2" stroke-linecap="round"/>
+              <rect x="12" y="12" width="10" height="10" rx="2" stroke="#0369A1" stroke-width="1.6"/>
+            </svg>
+            <h3 class="font-display font-semibold text-lg mb-3" style="color:#0B1A2E;">Massive Footprint Savings</h3>
+            <p class="font-body text-[14.5px] leading-relaxed" style="color:#50607A;">Fits in a fraction of the space required by massive concrete settling pools — reclaim that floor space for production, not sedimentation.</p>
+          </div>
+          <div class="rounded-2xl p-8 lg:col-span-2" style="background:#FFFFFF; border:1px solid rgba(11,26,46,0.08); box-shadow:0 20px 40px -26px rgba(11,26,46,0.22);">
+            <svg width="34" height="34" viewBox="0 0 34 34" fill="none" class="mb-6" aria-hidden="true">
+              <path d="M19 3 9 19h7l-2 12 11-18h-7l1-10Z" stroke="#0284C7" stroke-width="1.6" stroke-linejoin="round"/>
+              <line x1="4" y1="30" x2="30" y2="4" stroke="#F2846B" stroke-width="1.6"/>
+            </svg>
+            <h3 class="font-display font-semibold text-lg mb-3" style="color:#0B1A2E;">Zero-Power Separation Zone</h3>
+            <p class="font-body text-[14.5px] leading-relaxed" style="color:#50607A;">Utilizes advanced horizontal permanent magnets that require 0 kWh to capture pollutants — no pumps, no grid draw, no downtime risk.</p>
+          </div>
+          <div class="rounded-2xl p-8 lg:col-span-2" style="background:#FFFFFF; border:1px solid rgba(11,26,46,0.08); box-shadow:0 20px 40px -26px rgba(11,26,46,0.22);">
+            <svg width="34" height="34" viewBox="0 0 34 34" fill="none" class="mb-6" aria-hidden="true">
+              <path d="M27 11a10 10 0 0 0-18.6-3M7 23a10 10 0 0 0 18.6 3" stroke="#0284C7" stroke-width="1.6" stroke-linecap="round"/>
+              <path d="M7 4v6h6M27 30v-6h-6" stroke="#0284C7" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <h3 class="font-display font-semibold text-lg mb-3" style="color:#0B1A2E;">Circular Waste Model</h3>
+            <p class="font-body text-[14.5px] leading-relaxed" style="color:#50607A;">Reduces continuous chemical purchasing by implementing a unique, recyclable filtering matrix — lower consumables spend, cycle over cycle.</p>
+          </div>
+          <div class="rounded-2xl p-8 lg:col-span-2" style="background:#FFFFFF; border:1px solid rgba(11,26,46,0.08); box-shadow:0 20px 40px -26px rgba(11,26,46,0.22);">
+            <svg width="34" height="34" viewBox="0 0 34 34" fill="none" class="mb-6" aria-hidden="true">
+              <circle cx="17" cy="17" r="13" stroke="#0284C7" stroke-width="1.6"/>
+              <path d="M11 17.5 15 21.5 23 12.5" stroke="#0369A1" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <h3 class="font-display font-semibold text-lg mb-3" style="color:#0B1A2E;">Net-Zero Ready</h3>
+            <p class="font-body text-[14.5px] leading-relaxed" style="color:#50607A;">Our magnetic reactor achieves a net-zero operational footprint by utilizing HGMS that generates zero direct carbon or greenhouse gas process emissions during the wastewater treatment cycle.</p>
+          </div>
+          <div class="rounded-2xl p-8 lg:col-span-2" style="background:#FFFFFF; border:1px solid rgba(11,26,46,0.08); box-shadow:0 20px 40px -26px rgba(11,26,46,0.22);">
+            <svg width="34" height="34" viewBox="0 0 34 34" fill="none" class="mb-6" aria-hidden="true">
+              <rect x="10" y="10" width="14" height="14" rx="2" stroke="#0284C7" stroke-width="1.6"/>
+              <path d="M17 4v5M17 25v5M4 17h5M25 17h5M7 7l3 3M27 7l-3 3M7 27l3-3M27 27l-3-3" stroke="#0369A1" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+            <h3 class="font-display font-semibold text-lg mb-3" style="color:#0B1A2E;">Supercharged Intelligence</h3>
+            <p class="font-body text-[14.5px] leading-relaxed" style="color:#50607A;">Powered by next-generation automation and an onboard LLM co-pilot, our system self-regulates flow rates and chemical dosing while enabling operators to manage facility health conversationally. Continuous sensor streams feed an AI anomaly detection engine that predicts exact maintenance needs, while every compliance log and audit trail is permanently secured on a tamper-proof blockchain for absolute transparency.</p>
+          </div>
+          <div class="rounded-2xl p-8 lg:col-span-2" style="background:#FFFFFF; border:1px solid rgba(11,26,46,0.08); box-shadow:0 20px 40px -26px rgba(11,26,46,0.22);">
+            <svg width="34" height="34" viewBox="0 0 34 34" fill="none" class="mb-6" aria-hidden="true">
+              <circle cx="17" cy="17" r="12" stroke="#0284C7" stroke-width="1.6"/>
+              <path d="M17 9v8l6 3.5" stroke="#0369A1" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <h3 class="font-display font-semibold text-lg mb-3" style="color:#0B1A2E;">Minutes, Not Hours</h3>
+            <p class="font-body text-[14.5px] leading-relaxed" style="color:#50607A;">Our reactor achieves a 95%+ reduction in operating time by accelerating the wastewater separation process from hours down to just minutes through rapid magnetic capture.</p>
+          </div>
+          <div class="rounded-2xl p-8 lg:col-span-2 lg:col-start-3" style="background:#FFFFFF; border:1px solid rgba(11,26,46,0.08); box-shadow:0 20px 40px -26px rgba(11,26,46,0.22);">
+            <svg width="34" height="34" viewBox="0 0 34 34" fill="none" class="mb-6" aria-hidden="true">
+              <path d="M17 6v22M22 11c0-2.8-2.2-5-5-5s-5 1.8-5 4.3c0 5.2 10 2.6 10 7.9 0 2.5-2.2 4.3-5 4.3s-5-2.2-5-5" stroke="#0284C7" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+            <h3 class="font-display font-semibold text-lg mb-3" style="color:#0B1A2E;">Lower Operational Costs</h3>
+            <p class="font-body text-[14.5px] leading-relaxed" style="color:#50607A;">A 75% reduction in total operational costs vs. a conventional chemical ETP.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- METRICS -->
+    <section id="metrics" class="px-5 sm:px-8 py-20 sm:py-28 border-b border-line">
+      <div class="max-w-7xl mx-auto">
+        <div class="max-w-2xl mb-14">
+          <p class="font-body font-bold text-[12px] uppercase tracking-[0.22em] text-emerald-bright mb-4">Introducing Neer Sentinel</p>
+          <h2 class="font-display font-semibold text-lg sm:text-xl text-muted tracking-tight">The numbers that matter on the factory floor.</h2>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-5 mb-5">
+          <figure class="card-surface rounded-2xl overflow-hidden m-0">
+            <div class="w-full h-[280px] sm:h-[360px] flex items-center justify-center" style="background:#17203D;">
+              <img src="images-reactor-render.webp" alt="Concept render of the Neer Sentinel magnetic reactor shell, showing the dual magnet housing around the central reactor tube" class="max-w-full max-h-full object-contain block" loading="lazy" />
+            </div>
+            <figcaption class="p-5 font-mono text-[11px] uppercase tracking-[0.12em] text-muted">Design Render — Neer Sentinel Magnetic Reactor Shell</figcaption>
+          </figure>
+          <figure class="card-surface rounded-2xl overflow-hidden m-0">
+            <img src="images-pilot-install.jpg" alt="A Neer Sentinel unit installed and running at a pilot facility" class="w-full h-[280px] sm:h-[360px] object-cover block" loading="lazy" />
+            <figcaption class="p-5 font-mono text-[11px] uppercase tracking-[0.12em] text-muted">Field Installation — Live Pilot Unit</figcaption>
+          </figure>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-5 mb-5">
+          <div class="card-surface rounded-2xl p-7 flex flex-col justify-between min-h-[190px] lg:col-span-2">
+            <span class="font-mono text-5xl sm:text-[3.3rem] font-semibold glow-text tabular leading-none">95%+</span>
+            <p class="font-body text-[14px] text-muted mt-6 leading-snug">Operating time reduction — cycles down from hours to minutes</p>
+          </div>
+          <div class="card-surface rounded-2xl p-7 flex flex-col justify-between min-h-[190px] lg:col-span-2">
+            <span class="font-mono text-2xl sm:text-[1.9rem] font-semibold glow-text leading-tight">Zero Power</span>
+            <p class="font-body text-[14px] text-muted mt-6 leading-snug">Our system utilizes HGMS reactor to instantaneously extract targeted pollutants from the wastewater stream, completely eliminating the continuous electrical energy demands of traditional ETP clarification systems.</p>
+          </div>
+          <div class="card-surface rounded-2xl p-7 flex flex-col justify-between min-h-[190px] lg:col-span-2">
+            <span class="font-mono text-4xl sm:text-[2.7rem] font-semibold glow-text tabular leading-none">40–60%</span>
+            <p class="font-body text-[14px] text-muted mt-6 leading-snug">Lower overall plant electricity demand (electricity is only used in our system for the fluid pump pushing water through the tube) vs. traditional ETPs</p>
+          </div>
+          <div class="card-surface rounded-2xl p-7 flex flex-col justify-between min-h-[190px] lg:col-span-2">
+            <span class="font-mono text-4xl sm:text-[2.7rem] font-semibold glow-text tabular leading-none">85%</span>
+            <p class="font-body text-[14px] text-muted mt-6 leading-snug">Absolute reduction in total sludge waste volume</p>
+          </div>
+          <div class="card-surface rounded-2xl p-7 flex flex-col justify-between min-h-[190px] lg:col-span-2">
+            <span class="font-mono text-4xl sm:text-[2.7rem] font-semibold glow-text tabular leading-none">75%</span>
+            <p class="font-body text-[14px] text-muted mt-6 leading-snug">Reduction in total operational costs vs. a conventional chemical ETP</p>
+          </div>
+          <div class="card-surface rounded-2xl p-7 flex flex-col justify-between min-h-[190px] lg:col-span-2">
+            <span class="font-mono text-4xl sm:text-[2.7rem] font-semibold glow-text tabular leading-none">70–85%</span>
+            <p class="font-body text-[14px] text-muted mt-6 leading-snug">Reduction in total land footprint vs. a conventional treatment plant</p>
+          </div>
+          <div class="card-surface rounded-2xl p-7 flex flex-col justify-between min-h-[190px] lg:col-span-2 lg:col-start-2">
+            <span class="font-mono text-2xl sm:text-[1.9rem] font-semibold glow-text leading-tight">Circular Recovery</span>
+            <p class="font-body text-[14px] text-muted mt-6 leading-snug">Our system features an integrated closed-loop regeneration cycle that mechanically purges the captured pollutant sludge and chemically washes the magnetic nanoparticles, recovering them at a 95%+ efficiency rate for continuous process reuse.</p>
+          </div>
+          <div class="card-surface rounded-2xl p-7 flex flex-col min-h-[190px] lg:col-span-2">
+            <span class="font-mono text-2xl sm:text-[1.9rem] font-semibold glow-text leading-tight">Net-Zero Ready</span>
+            <p class="font-body text-[14px] text-muted mt-6 leading-snug">Our magnetic reactor achieves a net-zero operational footprint by utilizing HGMS that generates zero direct carbon or greenhouse gas process emissions during the wastewater treatment cycle.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div class="card-surface rounded-2xl p-7 flex flex-col justify-between min-h-[190px]">
+            <span class="font-mono text-2xl sm:text-[1.9rem] font-semibold glow-text leading-tight">Fully Automated STP Operations</span>
+            <p class="font-body text-[14px] text-muted mt-6 leading-snug">Eliminate manual oversight with next-generation sewage treatment plant (STP) automation that self-regulates flow rates, chemical dosing, and magnetic activation cycles in real time.</p>
+          </div>
+          <div class="card-surface rounded-2xl p-7 flex flex-col justify-between min-h-[190px]">
+            <span class="font-mono text-2xl sm:text-[1.9rem] font-semibold glow-text leading-tight">Real-Time Monitoring &amp; Predictive AI</span>
+            <p class="font-body text-[14px] text-muted mt-6 leading-snug">Continuous sensor streams fuel our AI anomaly detection engine, instantly spotting performance drops and pollutant spikes while forecasting exact schedules for magnetic matrix backwashing and RO membrane replacement before any degradation occurs.</p>
+          </div>
+          <div class="card-surface rounded-2xl p-7 flex flex-col justify-between min-h-[190px]">
+            <span class="font-mono text-2xl sm:text-[1.9rem] font-semibold glow-text leading-tight">LLM-Based Co-Pilot</span>
+            <p class="font-body text-[14px] text-muted mt-6 leading-snug">Interact with your wastewater facility conversationally. Operators can query system health, generate regulatory compliance reports instantly, and receive plain-language troubleshooting guidance from an on-board AI assistant.</p>
+          </div>
+          <div class="card-surface rounded-2xl p-7 flex flex-col justify-between min-h-[190px]">
+            <span class="font-mono text-2xl sm:text-[1.9rem] font-semibold glow-text leading-tight">Immutable Data Inscription</span>
+            <p class="font-body text-[14px] text-muted mt-6 leading-snug">Secure every compliance metric, audit trail, and processing log on-chain, storing data in a tamper-proof blockchain with permanent inscription for absolute regulatory transparency and carbon-credit verification.</p>
+          </div>
+        </div>
+
+        <div class="card-surface rounded-2xl p-7 sm:p-9 mt-5">
+          <p class="font-body font-bold text-[12px] uppercase tracking-[0.22em] text-emerald-bright mb-3">Direct Removal, Zero Extra Stages</p>
+          <p class="font-body text-[14.5px] text-muted leading-relaxed max-w-3xl mb-8">
+            Our single-stage magnetic reactor directly removes the pollutant classes below from raw wastewater through an integrated mixing and inline pH process — completely eliminating the need for independent external pre- or post-treatment systems for these pollutants.
+          </p>
+          <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="rounded-xl border border-line p-5">
+              <p class="font-body font-semibold text-[14px] text-offwhite mb-1.5">Heavy Metals</p>
+              <p class="font-body text-[13px] text-muted leading-snug">Chromium, Lead, Cadmium, Mercury, Arsenic, Copper, Zinc, Nickel</p>
+            </div>
+            <div class="rounded-xl border border-line p-5">
+              <p class="font-body font-semibold text-[14px] text-offwhite mb-1.5">Synthetic Dyes</p>
+              <p class="font-body text-[13px] text-muted leading-snug">Reactive, Acid, Direct, Disperse &amp; Basic dyes</p>
+            </div>
+            <div class="rounded-xl border border-line p-5">
+              <p class="font-body font-semibold text-[14px] text-offwhite mb-1.5">Non-Soluble Pigments</p>
+              <p class="font-body text-[13px] text-muted leading-snug">Captured directly on the magnet matrix</p>
+            </div>
+            <div class="rounded-xl border border-line p-5">
+              <p class="font-body font-semibold text-[14px] text-offwhite mb-1.5">Microplastics &amp; Polymers</p>
+              <p class="font-body text-[13px] text-muted leading-snug">Including suspended polymer residues</p>
+            </div>
+            <div class="rounded-xl border border-line p-5">
+              <p class="font-body font-semibold text-[14px] text-offwhite mb-1.5">Raw Starches</p>
+              <p class="font-body text-[13px] text-muted leading-snug">Removed at the point of entry</p>
+            </div>
+            <div class="rounded-xl border border-line p-5">
+              <p class="font-body font-semibold text-[14px] text-offwhite mb-1.5">Suspended Proteins &amp; Fats</p>
+              <p class="font-body text-[13px] text-muted leading-snug">Captured before they reach downstream units</p>
+            </div>
+          </div>
+          <p class="font-mono text-[11px] text-muted mt-8 leading-relaxed">Other pollutant classes outside this list may still require independent post-treatment.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CALCULATOR -->
+    <section id="calculator" class="px-5 sm:px-8 py-20 sm:py-28 border-b border-line bg-surface/40">
+      <div class="max-w-7xl mx-auto">
+        <div class="max-w-2xl mb-14">
+          <p class="font-body font-bold text-[12px] uppercase tracking-[0.22em] text-emerald-bright mb-4">Estimate Your Impact</p>
+          <h2 class="font-display font-bold text-3xl sm:text-4xl tracking-tight">See what Neer Sentinel saves you.</h2>
+          <p class="font-body text-muted mt-4 text-[15px]">Tell us your daily volume — we'll predict monthly cost, electricity demand, processing time, and land footprint across three treatment approaches.</p>
+        </div>
+
+        <!-- Input -->
+        <div class="card-surface rounded-2xl p-7 sm:p-9 mb-6">
+          <p class="font-mono text-[11px] uppercase tracking-[0.15em] text-muted mb-6">Your Facility Input</p>
+          <div class="flex items-baseline justify-between mb-3">
+            <label for="volumeInput" class="font-body text-[14.5px] text-offwhite">Current Daily Wastewater Volume</label>
+            <span class="font-mono text-emerald-bright text-lg tabular"><span id="volumeOut">750</span> m&sup3;/day</span>
+          </div>
+          <input id="volumeInput" type="range" min="10" max="3000" step="10" value="750" aria-describedby="volumeOut">
+          <div class="flex justify-between font-mono text-[11px] text-muted mt-2"><span>10 m&sup3;</span><span>3,000 m&sup3;</span></div>
+        </div>
+
+        <!-- Comparison table -->
+        <div class="card-surface rounded-2xl overflow-hidden">
+          <div class="grid grid-cols-4 text-[11px] sm:text-[12px] font-mono uppercase tracking-wide border-b border-line">
+            <div class="p-3 sm:p-5 text-muted">Factor</div>
+            <div class="p-3 sm:p-5 text-coral border-l border-line">Traditional ETP</div>
+            <div class="p-3 sm:p-5 border-l border-line" style="color:#B45309;">Microbial Fuel Cell</div>
+            <div class="p-3 sm:p-5 text-emerald-bright border-l border-line bg-emerald/5">Neer Sentinel</div>
+          </div>
+
+          <div class="grid grid-cols-4 border-b border-line">
+            <div class="p-3 sm:p-5 font-body font-medium text-[13px] sm:text-[15px] flex items-center">Monthly Operating Cost</div>
+            <div class="p-3 sm:p-5 border-l border-line font-mono text-[13px] sm:text-[15px] text-muted tabular flex items-center">$<span id="costTradOut">18,000</span></div>
+            <div class="p-3 sm:p-5 border-l border-line font-mono text-[13px] sm:text-[15px] tabular flex items-center" style="color:#B45309;">$<span id="costMfcOut">20,700</span></div>
+            <div class="p-3 sm:p-5 border-l border-line font-mono font-semibold text-[13px] sm:text-[15px] text-emerald-bright tabular flex items-center bg-emerald/5">$<span id="costNeerOut">4,500</span></div>
+          </div>
+
+          <div class="grid grid-cols-4 border-b border-line">
+            <div class="p-3 sm:p-5 font-body font-medium text-[13px] sm:text-[15px] flex items-center">Electricity Demand</div>
+            <div class="p-3 sm:p-5 border-l border-line font-mono text-[13px] sm:text-[15px] text-muted tabular flex flex-col sm:flex-row sm:items-baseline sm:gap-1"><span id="kwhTradOut">20,250</span><span class="text-[11px] sm:text-[15px]">kWh/mo</span></div>
+            <div class="p-3 sm:p-5 border-l border-line font-mono text-[13px] sm:text-[15px] tabular flex flex-col sm:flex-row sm:items-baseline sm:gap-1" style="color:#B45309;"><span id="kwhMfcOut">17,213</span><span class="text-[11px] sm:text-[15px]">kWh/mo</span></div>
+            <div class="p-3 sm:p-5 border-l border-line font-mono font-semibold text-[13px] sm:text-[15px] text-emerald-bright tabular flex flex-col sm:flex-row sm:items-baseline sm:gap-1 bg-emerald/5"><span id="kwhNeerOut">10,125</span><span class="text-[11px] sm:text-[15px]">kWh/mo</span></div>
+          </div>
+
+          <div class="grid grid-cols-4 border-b border-line">
+            <div class="p-3 sm:p-5 font-body font-medium text-[13px] sm:text-[15px] flex items-center">Processing Time</div>
+            <div class="p-3 sm:p-5 border-l border-line font-mono text-[13px] sm:text-[15px] text-muted tabular flex flex-col sm:flex-row sm:items-baseline sm:gap-1"><span id="timeTradOut">9.8</span><span class="text-[11px] sm:text-[15px]">hrs/day</span></div>
+            <div class="p-3 sm:p-5 border-l border-line font-mono text-[13px] sm:text-[15px] tabular flex flex-col sm:flex-row sm:items-baseline sm:gap-1" style="color:#B45309;"><span id="timeMfcOut">11.7</span><span class="text-[11px] sm:text-[15px]">hrs/day</span></div>
+            <div class="p-3 sm:p-5 border-l border-line font-mono font-semibold text-[13px] sm:text-[15px] text-emerald-bright tabular flex flex-col sm:flex-row sm:items-baseline sm:gap-1 bg-emerald/5"><span id="timeNeerOut">0.5</span><span class="text-[11px] sm:text-[15px]">hrs/day</span></div>
+          </div>
+
+          <div class="grid grid-cols-4">
+            <div class="p-3 sm:p-5 font-body font-medium text-[13px] sm:text-[15px] flex items-center">Land Footprint</div>
+            <div class="p-3 sm:p-5 border-l border-line font-mono text-[13px] sm:text-[15px] text-muted tabular flex items-center"><span id="footTradOut">263</span> m&sup2;</div>
+            <div class="p-3 sm:p-5 border-l border-line font-mono text-[13px] sm:text-[15px] tabular flex items-center" style="color:#B45309;"><span id="footMfcOut">420</span> m&sup2;</div>
+            <div class="p-3 sm:p-5 border-l border-line font-mono font-semibold text-[13px] sm:text-[15px] text-emerald-bright tabular flex items-center bg-emerald/5"><span id="footNeerOut">59</span> m&sup2;</div>
+          </div>
+        </div>
+
+        <p class="font-body text-[14.5px] text-muted mt-6">At this volume, Neer Sentinel saves <span class="font-semibold text-offwhite">$<span id="savingsOut">13,500</span>/mo</span> and frees up <span class="font-semibold text-offwhite"><span id="timeOut">9.3</span> hrs/day</span> versus a conventional chemical ETP.</p>
+        <p class="font-mono text-[11px] text-muted mt-4 leading-relaxed">Traditional ETP figures modeled from published industrial effluent-treatment energy audits and plant-footprint design guidance. Microbial fuel cell figures are modeled from peer-reviewed pilot-scale MFC studies — the technology remains largely unproven at industrial wastewater scale, and real-world results vary significantly by site and configuration. Treat all figures as planning estimates, not guarantees.</p>
+
+        <details class="mt-4 group">
+          <summary class="font-mono text-[11px] text-emerald-bright cursor-pointer select-none inline-flex items-center gap-1.5 hover:text-offwhite transition-colors">
+            <span>See the sources behind these predictions</span>
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" class="transition-transform group-open:rotate-180" aria-hidden="true"><path d="M2 3.5 5 6.5 8 3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </summary>
+          <ul class="mt-3 space-y-1.5 font-mono text-[11px] text-muted leading-relaxed list-disc pl-4">
+            <li><a href="https://waterandwastewater.com/how-much-electricity-does-a-wastewater-treatment-plant-use" target="_blank" rel="noopener noreferrer" class="underline decoration-dotted hover:text-emerald-bright transition-colors">How Much Electricity Does a Wastewater Treatment Plant Use — waterandwastewater.com</a></li>
+            <li><a href="https://vjol.info.vn/index.php/mostc/article/download/124882/102608" target="_blank" rel="noopener noreferrer" class="underline decoration-dotted hover:text-emerald-bright transition-colors">Energy audit of a Vietnamese industrial wastewater treatment plant — vjol.info.vn</a></li>
+            <li><a href="https://www.cseindia.org/cost-estimation-for-planning-and-designing-of-decentralised-wastewater-treatment-system-2073" target="_blank" rel="noopener noreferrer" class="underline decoration-dotted hover:text-emerald-bright transition-colors">Cost &amp; land-area estimation for wastewater treatment systems — Centre for Science and Environment (India)</a></li>
+            <li><a href="https://digitalcommons.usu.edu/mae_stures/43" target="_blank" rel="noopener noreferrer" class="underline decoration-dotted hover:text-emerald-bright transition-colors">Techno-economic modeling of large-scale microbial fuel cell treatment — Utah State University</a></li>
+            <li><a href="https://pubs.rsc.org/en/content/articlelanding/2016/ew/c6ew00020g" target="_blank" rel="noopener noreferrer" class="underline decoration-dotted hover:text-emerald-bright transition-colors">Pilot-scale microbial fuel cell energy balance study — RSC Environmental Science: Water Research &amp; Technology</a></li>
+            <li><a href="https://sites.psu.edu/brucelogan/files/2022/03/2022-Rossi-etal-WatRes-pilot-MFC.pdf" target="_blank" rel="noopener noreferrer" class="underline decoration-dotted hover:text-emerald-bright transition-colors">850L air-cathode microbial fuel cell pilot at a treatment facility — Penn State (Logan Lab)</a></li>
+          </ul>
+        </details>
+      </div>
+    </section>
+
+    <!-- MISSION / PULL QUOTE -->
+    <section id="mission" class="relative overflow-hidden px-5 sm:px-8 py-24 sm:py-32 border-b border-line bg-surface/30">
+      <div aria-hidden="true" class="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-emerald/5 blur-3xl rounded-full"></div>
+      <div class="max-w-3xl mx-auto text-center relative">
+        <p class="font-body font-bold text-[12px] uppercase tracking-[0.22em] text-emerald-bright mb-6">Our Mission</p>
+        <span aria-hidden="true" class="inline-block w-10 h-px bg-emerald/50 mb-8"></span>
+        <p class="font-display text-[1.6rem] sm:text-[2.1rem] leading-[1.35] tracking-tight text-offwhite italic">
+          "Industrial water treatment shouldn't cost the planet to clean up after the factory floor. We built Neer Sentinel to make passive, zero-power separation the default — not the exception."
+        </p>
+        <p class="font-mono text-[12px] uppercase tracking-[0.15em] text-muted mt-8">— Durva Research Lab, Engineering Team</p>
+      </div>
+    </section>
+
+    <!-- BACKED BY -->
+    <section id="backed-by" class="px-5 sm:px-8 py-16 sm:py-20 border-b border-line">
+      <div class="max-w-7xl mx-auto">
+        <p class="font-body font-bold text-[12px] uppercase tracking-[0.22em] text-emerald-bright mb-10 text-center">Backed By</p>
+        <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-4 sm:gap-5">
+          <div class="card-surface rounded-xl h-24 sm:h-28 flex items-center justify-center p-2.5 sm:p-3">
+            <img src="Institute%20Logos/Samsung-trans.png" alt="Samsung" class="max-w-full max-h-full object-contain" loading="lazy" />
+          </div>
+          <div class="card-surface rounded-xl h-24 sm:h-28 flex items-center justify-center p-2.5 sm:p-3">
+            <img src="Institute%20Logos/bv.png" alt="Be Visioneers — The Mercedes-Benz Fellowship" class="max-w-full max-h-full object-contain rounded-lg" loading="lazy" />
+          </div>
+          <div class="card-surface rounded-xl h-24 sm:h-28 flex items-center justify-center p-2.5 sm:p-3">
+            <img src="Institute%20Logos/Emeregnt.png" alt="Mercatus Center, George Mason University" class="max-w-full max-h-full object-contain" loading="lazy" />
+          </div>
+          <div class="card-surface rounded-xl h-24 sm:h-28 flex items-center justify-center p-2.5 sm:p-3">
+            <img src="Institute%20Logos/GS-trans.png" alt="Global Shapers Community, Jodhpur" class="max-w-full max-h-full object-contain" loading="lazy" />
+          </div>
+          <div class="card-surface rounded-xl h-24 sm:h-28 flex items-center justify-center p-2.5 sm:p-3">
+            <img src="Institute%20Logos/FITT.jpeg" alt="Foundation for Innovation and Technology Transfer" class="max-w-full max-h-full object-contain" loading="lazy" />
+          </div>
+          <div class="card-surface rounded-xl h-24 sm:h-28 flex items-center justify-center p-2.5 sm:p-3">
+            <img src="Institute%20Logos/IIT-DELHI.webp" alt="Indian Institute of Technology Delhi" class="max-w-full max-h-full object-contain" loading="lazy" />
+          </div>
+          <div class="card-surface rounded-xl h-24 sm:h-28 flex items-center justify-center p-2.5 sm:p-3">
+            <img src="Institute%20Logos/DBT-logo_2023-04-12-122027_clmg_76ea13ce5cec9e3d897b76c6abe4779f.png" alt="Department of Biotechnology, Government of India" class="max-w-full max-h-full object-contain" loading="lazy" />
+          </div>
+          <div class="card-surface rounded-xl h-24 sm:h-28 flex items-center justify-center p-2.5 sm:p-3">
+            <img src="Institute%20Logos/IIT_Guwahati_Logo.svg.png" alt="Indian Institute of Technology Guwahati" class="max-w-full max-h-full object-contain" loading="lazy" />
+          </div>
+          <div class="card-surface rounded-xl h-24 sm:h-28 flex items-center justify-center p-2.5 sm:p-3">
+            <img src="Institute%20Logos/3ae34ac0-29a1-43bb-8e62-72b7e3ed14fe.jpg" alt="Indian Institute of Technology Jodhpur" class="max-w-full max-h-full object-contain" loading="lazy" />
+          </div>
+          <div class="card-surface rounded-xl h-24 sm:h-28 flex items-center justify-center p-2.5 sm:p-3">
+            <img src="Institute%20Logos/NEIST.jpg" alt="CSIR–North East Institute of Science and Technology" class="max-w-full max-h-full object-contain" loading="lazy" />
+          </div>
+          <div class="card-surface rounded-xl h-24 sm:h-28 flex items-center justify-center p-2.5 sm:p-3">
+            <img src="Institute%20Logos/BioNEST.jpeg" alt="CSIR-NEIST BioNEST Bio-Incubator" class="max-w-full max-h-full object-contain" loading="lazy" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER CTA -->
+    <section id="demo" class="px-5 sm:px-8 py-24 sm:py-32 bg-grid relative overflow-hidden">
+      <div aria-hidden="true" class="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full bg-emerald/10 blur-3xl"></div>
+      <div class="max-w-2xl mx-auto text-center relative">
+        <h2 class="font-display font-bold text-3xl sm:text-[2.6rem] tracking-tight mb-5">Ready to upgrade your facility's efficiency?</h2>
+        <p class="font-body text-muted text-[15.5px] mb-10 leading-relaxed">Join the facilities already piloting Neer Sentinel. Leave your email and our engineering team will reach out to scope a pilot for your line.</p>
+
+        <form id="demoForm" class="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto" novalidate>
+          <label for="demoEmail" class="sr-only">Work email</label>
+          <input id="demoEmail" type="email" required placeholder="you@yourfactory.com"
+            class="flex-1 min-w-0 bg-surface border border-line rounded-full px-5 py-3.5 font-body text-[14.5px] text-offwhite placeholder:text-muted focus:border-emerald/60 transition-colors" />
+          <button type="submit" class="font-body font-semibold text-[14.5px] px-6 py-3.5 rounded-full bg-emerald text-ink hover:bg-emerald-bright transition-colors shrink-0">
+            Request Demo
+          </button>
+        </form>
+        <p id="demoNote" class="font-mono text-[12px] text-muted mt-5" role="status" aria-live="polite">No spam. Just a pilot scoping call from our engineering team.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="px-5 sm:px-8 py-10 border-t border-line">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-5">
+      <div class="flex items-center gap-2.5">
+        <img src="durva-logo-icon.png" alt="Durva Research Lab" class="w-6 h-6 object-contain" />
+        <span class="font-body text-[13px] text-muted">Neer Sentinel &middot; Durva Research Lab &copy; 2026</span>
+      </div>
+      <nav class="flex gap-6 font-body text-[13px] text-muted">
+        <a href="#metrics" class="hover:text-offwhite transition-colors">Performance</a>
+        <a href="mailto:hello@durvaresearchlab.com" class="hover:text-offwhite transition-colors">hello@durvaresearchlab.com</a>
+      </nav>
+    </div>
+  </footer>
+
+  <!-- STICKY CTA BAR -->
+  <div id="stickyBar" class="fixed bottom-0 inset-x-0 z-50 translate-y-full transition-transform duration-300 ease-out border-t border-line bg-ink/90 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-2.5 min-w-0">
+        <img src="durva-logo-icon.png" alt="Durva Research Lab" class="w-7 h-7 object-contain shrink-0" />
+        <span class="font-display font-semibold text-[14px] truncate">Neer Sentinel <span class="text-muted font-body font-normal hidden sm:inline">&middot; NS-200 Unit</span></span>
+      </div>
+      <a href="#demo" class="shrink-0 font-body font-semibold text-[13px] px-5 py-2.5 rounded-full bg-emerald text-ink hover:bg-emerald-bright transition-colors">
+        Request a Pilot Demo
+      </a>
+    </div>
+  </div>
+
+<script>
+(function () {
+  "use strict";
+
+  var volumeInput = document.getElementById('volumeInput');
+  var volumeOut = document.getElementById('volumeOut');
+  var savingsOut = document.getElementById('savingsOut');
+  var timeOut = document.getElementById('timeOut');
+  var costTradOut = document.getElementById('costTradOut');
+  var costMfcOut = document.getElementById('costMfcOut');
+  var costNeerOut = document.getElementById('costNeerOut');
+  var kwhTradOut = document.getElementById('kwhTradOut');
+  var kwhMfcOut = document.getElementById('kwhMfcOut');
+  var kwhNeerOut = document.getElementById('kwhNeerOut');
+  var timeTradOut = document.getElementById('timeTradOut');
+  var timeMfcOut = document.getElementById('timeMfcOut');
+  var timeNeerOut = document.getElementById('timeNeerOut');
+  var footTradOut = document.getElementById('footTradOut');
+  var footMfcOut = document.getElementById('footMfcOut');
+  var footNeerOut = document.getElementById('footNeerOut');
+
+  // Modeled coefficients — see methodology note under the calculator table.
+  var COST_PER_M3 = 0.80;      // $/m3, conventional chemical ETP (energy + chemicals + labor + sludge)
+  var KWH_PER_M3 = 0.90;       // kWh/m3, conventional chemical ETP
+  var FOOTPRINT_PER_M3DAY = 0.35; // m2 per m3/day capacity, conventional chemical ETP
+
+  var MFC_COST_MULT = 1.15;    // membrane + maintenance premium at current MFC maturity
+  var MFC_KWH_MULT = 0.85;     // partial self-generation offsets grid draw, net effect is modest
+  var MFC_TIME_MULT = 1.20;    // slower bioelectrochemical kinetics vs. activated sludge
+  var MFC_FOOTPRINT_MULT = 1.60; // low power density per m2 requires larger reactor area
+
+  function formatInt(n) {
+    return Math.round(n).toLocaleString('en-US');
+  }
+
+  function fillPercent(input) {
+    var min = parseFloat(input.min), max = parseFloat(input.max), val = parseFloat(input.value);
+    return ((val - min) / (max - min)) * 100 + '%';
+  }
+
+  function update() {
+    var volume = parseFloat(volumeInput.value);
+    volumeOut.textContent = formatInt(volume);
+
+    var monthlyVolume = volume * 30;
+
+    // Traditional ETP baseline
+    var costTrad = monthlyVolume * COST_PER_M3;
+    var kwhTrad = monthlyVolume * KWH_PER_M3;
+    var timeTrad = Math.min(24, 6 + volume / 200);
+    var footTrad = volume * FOOTPRINT_PER_M3DAY;
+
+    // Microbial Fuel Cell
+    var costMfc = costTrad * MFC_COST_MULT;
+    var kwhMfc = kwhTrad * MFC_KWH_MULT;
+    var timeMfc = Math.min(24, timeTrad * MFC_TIME_MULT);
+    var footMfc = footTrad * MFC_FOOTPRINT_MULT;
+
+    // Neer Sentinel
+    var costNeer = costTrad * 0.25;   // 75% lower
+    var kwhNeer = kwhTrad * 0.50;     // 40–60% lower, midpoint
+    var timeNeer = timeTrad * 0.05;   // 95%+ faster
+    var footNeer = footTrad * 0.225;  // 70–85% smaller, midpoint
+
+    costTradOut.textContent = formatInt(costTrad);
+    costMfcOut.textContent = formatInt(costMfc);
+    costNeerOut.textContent = formatInt(costNeer);
+
+    kwhTradOut.textContent = formatInt(kwhTrad);
+    kwhMfcOut.textContent = formatInt(kwhMfc);
+    kwhNeerOut.textContent = formatInt(kwhNeer);
+
+    timeTradOut.textContent = timeTrad.toFixed(1);
+    timeMfcOut.textContent = timeMfc.toFixed(1);
+    timeNeerOut.textContent = timeNeer.toFixed(1);
+
+    footTradOut.textContent = formatInt(footTrad);
+    footMfcOut.textContent = formatInt(footMfc);
+    footNeerOut.textContent = formatInt(footNeer);
+
+    savingsOut.textContent = formatInt(costTrad - costNeer);
+    timeOut.textContent = (timeTrad - timeNeer).toFixed(1);
+
+    volumeInput.style.setProperty('--fill', fillPercent(volumeInput));
+  }
+
+  volumeInput.addEventListener('input', update);
+  update();
+
+  var demoForm = document.getElementById('demoForm');
+  var demoEmail = document.getElementById('demoEmail');
+  var demoNote = document.getElementById('demoNote');
+
+  demoForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (!demoEmail.checkValidity()) {
+      demoNote.textContent = 'Please enter a valid work email.';
+      return;
+    }
+    demoNote.textContent = 'Thanks — our engineering team will reach out within 1 business day.';
+    demoForm.reset();
+  });
+
+  var stickyBar = document.getElementById('stickyBar');
+  var heroSection = document.querySelector('#top > section');
+  var demoSection = document.getElementById('demo');
+  var pastHero = false;
+  var nearDemo = false;
+
+  function applyStickyState() {
+    var shouldShow = pastHero && !nearDemo;
+    stickyBar.classList.toggle('translate-y-full', !shouldShow);
+  }
+
+  window.addEventListener('scroll', function () {
+    var threshold = heroSection.offsetTop + heroSection.offsetHeight;
+    pastHero = window.scrollY > threshold;
+    applyStickyState();
+  }, { passive: true });
+
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (entries) {
+      nearDemo = entries[0].isIntersecting;
+      applyStickyState();
+    }, { rootMargin: '0px 0px -40% 0px' }).observe(demoSection);
+  }
+})();
+</script>
+</body>
+</html>
