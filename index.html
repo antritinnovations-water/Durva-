@@ -128,8 +128,12 @@
   @keyframes trapped-jitter { 0%,100% { transform: translate(0,0); } 50% { transform: translate(0.6px,-0.6px); } }
 
   @media (prefers-reduced-motion: reduce) {
-    .flow-line, .pulse-dot, .inflow-particle, .trapped-particle { animation: none; }
+    .flow-line, .pulse-dot, .inflow-particle, .trapped-particle, .marquee-track { animation: none; }
   }
+
+  .marquee-track { animation: marquee-slide 32s linear infinite; width: max-content; }
+  .marquee-track:hover { animation-play-state: paused; }
+  @keyframes marquee-slide { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
   a:focus-visible, button:focus-visible, input:focus-visible {
     outline: 2px solid #0EA5E9;
@@ -406,17 +410,37 @@
           <p class="font-body font-bold text-[12px] uppercase tracking-[0.22em] text-emerald-bright mb-4">Introducing Neer Sentinel</p>
           <h2 class="font-display font-semibold text-lg sm:text-xl text-muted tracking-tight">The numbers that matter on the factory floor.</h2>
         </div>
-        <div class="grid sm:grid-cols-2 gap-5 mb-5">
-          <figure class="card-surface rounded-2xl overflow-hidden m-0">
-            <div class="w-full h-[280px] sm:h-[360px] flex items-center justify-center" style="background:#17203D;">
-              <img src="images-reactor-render.webp" alt="Concept render of the Neer Sentinel magnetic reactor shell, showing the dual magnet housing around the central reactor tube" class="max-w-full max-h-full object-contain block" loading="lazy" />
-            </div>
-            <figcaption class="p-5 font-mono text-[11px] uppercase tracking-[0.12em] text-muted">Design Render — Neer Sentinel Magnetic Reactor Shell</figcaption>
-          </figure>
-          <figure class="card-surface rounded-2xl overflow-hidden m-0">
-            <img src="images-pilot-install.jpg" alt="A Neer Sentinel unit installed and running at a pilot facility" class="w-full h-[280px] sm:h-[360px] object-cover block" loading="lazy" />
-            <figcaption class="p-5 font-mono text-[11px] uppercase tracking-[0.12em] text-muted">Field Installation — Live Pilot Unit</figcaption>
-          </figure>
+        <div class="overflow-hidden mb-5">
+          <div class="flex gap-5 marquee-track">
+            <figure class="card-surface rounded-2xl overflow-hidden m-0 shrink-0 w-[300px] sm:w-[380px]">
+              <div class="w-full h-[280px] sm:h-[360px] flex items-center justify-center" style="background:#17203D;">
+                <img src="images-reactor-render.webp" alt="Concept render of the Neer Sentinel magnetic reactor shell, showing the dual magnet housing around the central reactor tube" class="max-w-full max-h-full object-contain block" loading="lazy" />
+              </div>
+              <figcaption class="p-5 font-mono text-[11px] uppercase tracking-[0.12em] text-muted">Design Render — Neer Sentinel Magnetic Reactor Shell</figcaption>
+            </figure>
+            <figure class="card-surface rounded-2xl overflow-hidden m-0 shrink-0 w-[300px] sm:w-[380px]">
+              <img src="images-pilot-install.jpg" alt="A Neer Sentinel unit installed and running at a pilot facility" class="w-full h-[280px] sm:h-[360px] object-cover block" loading="lazy" />
+              <figcaption class="p-5 font-mono text-[11px] uppercase tracking-[0.12em] text-muted">Field Installation — Live Pilot Unit</figcaption>
+            </figure>
+            <figure class="card-surface rounded-2xl overflow-hidden m-0 shrink-0 w-[300px] sm:w-[380px]">
+              <img src="images-plant-installation.webp" alt="Neer Sentinel treatment tanks and control panels installed at a treatment plant" class="w-full h-[280px] sm:h-[360px] object-cover block" loading="lazy" />
+              <figcaption class="p-5 font-mono text-[11px] uppercase tracking-[0.12em] text-muted">Plant Installation — Treatment Tanks &amp; Controls</figcaption>
+            </figure>
+            <figure class="card-surface rounded-2xl overflow-hidden m-0 shrink-0 w-[300px] sm:w-[380px]" aria-hidden="true">
+              <div class="w-full h-[280px] sm:h-[360px] flex items-center justify-center" style="background:#17203D;">
+                <img src="images-reactor-render.webp" alt="" class="max-w-full max-h-full object-contain block" loading="lazy" />
+              </div>
+              <figcaption class="p-5 font-mono text-[11px] uppercase tracking-[0.12em] text-muted">Design Render — Neer Sentinel Magnetic Reactor Shell</figcaption>
+            </figure>
+            <figure class="card-surface rounded-2xl overflow-hidden m-0 shrink-0 w-[300px] sm:w-[380px]" aria-hidden="true">
+              <img src="images-pilot-install.jpg" alt="" class="w-full h-[280px] sm:h-[360px] object-cover block" loading="lazy" />
+              <figcaption class="p-5 font-mono text-[11px] uppercase tracking-[0.12em] text-muted">Field Installation — Live Pilot Unit</figcaption>
+            </figure>
+            <figure class="card-surface rounded-2xl overflow-hidden m-0 shrink-0 w-[300px] sm:w-[380px]" aria-hidden="true">
+              <img src="images-plant-installation.webp" alt="" class="w-full h-[280px] sm:h-[360px] object-cover block" loading="lazy" />
+              <figcaption class="p-5 font-mono text-[11px] uppercase tracking-[0.12em] text-muted">Plant Installation — Treatment Tanks &amp; Controls</figcaption>
+            </figure>
+          </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-5 mb-5">
