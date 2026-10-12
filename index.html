@@ -577,9 +577,9 @@
           </div>
 
           <div class="grid grid-cols-4 border-b border-line">
-            <div class="p-3 sm:p-5 font-body font-medium text-[13px] sm:text-[15px] flex items-center">Processing Time</div>
-            <div class="p-3 sm:p-5 border-l border-line font-mono text-[13px] sm:text-[15px] text-muted tabular flex flex-col sm:flex-row sm:items-baseline sm:gap-1"><span id="timeTradOut">9.8</span><span class="text-[11px] sm:text-[15px]">hrs/day</span></div>
-            <div class="p-3 sm:p-5 border-l border-line font-mono text-[13px] sm:text-[15px] tabular flex flex-col sm:flex-row sm:items-baseline sm:gap-1" style="color:#B45309;"><span id="timeMfcOut">11.7</span><span class="text-[11px] sm:text-[15px]">hrs/day</span></div>
+            <div class="p-3 sm:p-5 font-body font-medium text-[13px] sm:text-[15px] flex items-center">Treatment Time per Litre</div>
+            <div class="p-3 sm:p-5 border-l border-line font-mono text-[11px] sm:text-[13px] text-muted tabular flex items-center leading-snug" id="timeTradOut">20–45 h (~30 h)</div>
+            <div class="p-3 sm:p-5 border-l border-line font-mono text-[11px] sm:text-[13px] tabular flex items-center leading-snug" style="color:#B45309;" id="timeMfcOut">0.6–2.9 days (~1.4 days)</div>
             <div class="p-3 sm:p-5 border-l border-line font-mono font-semibold text-[13px] sm:text-[15px] text-emerald-bright tabular flex flex-col sm:flex-row sm:items-baseline sm:gap-1 bg-emerald/5"><span id="timeNeerOut">0.5</span><span class="text-[11px] sm:text-[15px]">hrs/day</span></div>
           </div>
 
@@ -594,6 +594,7 @@
         <p class="font-body text-[14.5px] text-muted mt-6">At this volume, Neer Sentinel saves <span class="font-semibold text-offwhite">$<span id="savingsOut">13,500</span>/mo</span> and frees up <span class="font-semibold text-offwhite"><span id="timeOut">9.3</span> hrs/day</span> versus a conventional chemical ETP.</p>
         <p class="font-mono text-[11px] text-muted mt-4 leading-relaxed">Traditional ETP figures modeled from published industrial effluent-treatment energy audits and plant-footprint design guidance. Microbial fuel cell figures are modeled from peer-reviewed pilot-scale MFC studies — the technology remains largely unproven at industrial wastewater scale, and real-world results vary significantly by site and configuration. Treat all figures as planning estimates, not guarantees.</p>
         <p class="font-mono text-[11px] text-muted mt-2 leading-relaxed">Land footprint: ETP calibrated to a 15 MLD textile CETP in Ludhiana (15,000 m&sup2;). MFC extrapolated from the most compact published pilot (1.4 m&sup3;); no full-scale MFC plant exists. Neer Sentinel figure is from our own engineering design and excludes brine-evaporator land.</p>
+        <p class="font-mono text-[11px] text-muted mt-2 leading-relaxed">Treatment time per litre: time each litre spends in treatment after the equalization tank, which every system uses. Set by the process, not plant size. ETP: US EPA design data and textile studies. MFC: pilot and lab studies (no full-scale plant exists).</p>
 
         <details class="mt-4 group">
           <summary class="font-mono text-[11px] text-emerald-bright cursor-pointer select-none inline-flex items-center gap-1.5 hover:text-offwhite transition-colors">
@@ -610,6 +611,10 @@
             <li><a href="https://www.greentribunal.gov.in/sites/default/files/news_updates/Reply%20of%20PPCB%20in%20Appeal%20No%2048%20of%202024%20(Bahadur%20ke%20Textiles%20Knitwear%20Association%20Vs.%20PPCB%20&%20Ors.).pdf" target="_blank" rel="noopener noreferrer" class="underline decoration-dotted hover:text-emerald-bright transition-colors">15 MLD textile CETP land area (15,000 m&sup2;), Ludhiana — Punjab Pollution Control Board, NGT filing</a></li>
             <li><a href="https://www.netsolwater.com/how-much-land-is-required-for-a-100-kld-stp.php?blog=7135" target="_blank" rel="noopener noreferrer" class="underline decoration-dotted hover:text-emerald-bright transition-colors">Land required for a 100 KLD sewage treatment plant — Netsol Water</a></li>
             <li><a href="https://arodes.hes-so.ch/record/9603/files/Blatter_2021_stretched_1000-L_microbial_fuel_cell.pdf" target="_blank" rel="noopener noreferrer" class="underline decoration-dotted hover:text-emerald-bright transition-colors">Stretched 1000-L microbial fuel cell footprint — HES-SO</a></li>
+            <li><a href="https://www.epa.gov/sites/default/files/2015-06/documents/package_plant.pdf" target="_blank" rel="noopener noreferrer" class="underline decoration-dotted hover:text-emerald-bright transition-colors">Wastewater Technology Fact Sheet: Package Plants (aeration detention times) — US EPA Office of Water</a></li>
+            <li><a href="https://doi.org/10.3329/jesnr.v6i1.22060" target="_blank" rel="noopener noreferrer" class="underline decoration-dotted hover:text-emerald-bright transition-colors">Treatment process selection for textile dye wastewater — Journal of Environmental Science &amp; Natural Resources</a></li>
+            <li><a href="https://www.netsolwater.com/design-an-effluent-treatment-plant-for-color-dye-or-fabric-dye-unit-with-flow-diagram.php?blog=4870" target="_blank" rel="noopener noreferrer" class="underline decoration-dotted hover:text-emerald-bright transition-colors">ETP design for a color/fabric dye unit (stage retention times) — Netsol Water</a></li>
+            <li><a href="https://doi.org/10.1007/s40974-023-00314-4" target="_blank" rel="noopener noreferrer" class="underline decoration-dotted hover:text-emerald-bright transition-colors">Constructed wetland–MFC retention time on textile azo dyes — Energy, Ecology and Environment</a></li>
           </ul>
         </details>
       </div>
@@ -743,7 +748,44 @@
 
   var MFC_COST_MULT = 1.15;    // membrane + maintenance premium at current MFC maturity
   var MFC_KWH_MULT = 0.85;     // partial self-generation offsets grid draw, net effect is modest
-  var MFC_TIME_MULT = 1.20;    // slower bioelectrochemical kinetics vs. activated sludge
+
+  // Treatment time per litre (ETP, MFC): built from process stages, in hours [low, typical, high].
+  // Fixed by the process, not plant size — equalization is excluded by default since every
+  // system (Neer Sentinel included) has an equalization tank.
+  var TREATMENT_STAGES = {
+    etp: [
+      { hours: [8, 10, 12], equalization: true },  // equalization tank
+      { hours: [0.5, 1.5, 3] },                     // neutralization, coagulation, flocculation
+      { hours: [1.5, 2, 2.5] },                     // primary settling
+      { hours: [16, 24, 36] },                      // aeration tank (bacteria)
+      { hours: [2, 2.5, 3] },                       // secondary clarifier
+      { hours: [0.1, 0.25, 0.5] }                   // sand and carbon filters
+    ],
+    mfc: [
+      { hours: [8, 10, 12], equalization: true },  // equalization tank
+      { hours: [0.5, 1.5, 3] },                     // chemical pre-treatment
+      { hours: [12, 30, 60] },                      // MFC reactor
+      { hours: [1, 3, 6] }                          // aerobic post-treatment (biofilter)
+    ]
+  };
+
+  function treatmentTimeRange(tech, includeEqualization) {
+    var range = { low: 0, typical: 0, high: 0 };
+    TREATMENT_STAGES[tech].forEach(function (stage) {
+      if (stage.equalization && !includeEqualization) return;
+      range.low += stage.hours[0];
+      range.typical += stage.hours[1];
+      range.high += stage.hours[2];
+    });
+    return range;
+  }
+
+  function formatTreatmentTime(range) {
+    if (range.high <= 48) {
+      return Math.round(range.low) + '–' + Math.round(range.high) + ' h (~' + Math.round(range.typical) + ' h)';
+    }
+    return (range.low / 24).toFixed(1) + '–' + (range.high / 24).toFixed(1) + ' days (~' + (range.typical / 24).toFixed(1) + ' days)';
+  }
 
   // Land footprint (m2), Q = daily wastewater volume (m3/day). See sources below the calculator.
   // Traditional ETP: calibrated to a real 15 MLD textile CETP (15,000 m2); small plants need
@@ -795,13 +837,11 @@
     // Traditional ETP baseline
     var costTrad = monthlyVolume * COST_PER_M3;
     var kwhTrad = monthlyVolume * KWH_PER_M3;
-    var timeTrad = Math.min(24, 6 + volume / 200);
     var footTrad = etpFootprint(volume);
 
     // Microbial Fuel Cell
     var costMfc = costTrad * MFC_COST_MULT;
     var kwhMfc = kwhTrad * MFC_KWH_MULT;
-    var timeMfc = Math.min(24, timeTrad * MFC_TIME_MULT);
     var footMfc = mfcFootprint(volume);
 
     // Neer Sentinel
@@ -818,8 +858,6 @@
     kwhMfcOut.textContent = formatInt(kwhMfc);
     kwhNeerOut.textContent = formatInt(kwhNeer);
 
-    timeTradOut.textContent = timeTrad.toFixed(1);
-    timeMfcOut.textContent = timeMfc.toFixed(1);
     timeNeerOut.textContent = timeNeer.toFixed(1);
 
     footTradOut.textContent = formatSig2(footTrad);
@@ -827,10 +865,14 @@
     footNeerOut.textContent = formatSig2(footNeer);
 
     savingsOut.textContent = formatInt(costTrad - costNeer);
-    timeOut.textContent = (timeTrad - timeNeer).toFixed(1);
+    timeOut.textContent = (24 - timeNeer).toFixed(1);
 
     volumeInput.style.setProperty('--fill', fillPercent(volumeInput));
   }
+
+  // Treatment time per litre is fixed by the process, not plant size — set once, not on slider input.
+  timeTradOut.textContent = formatTreatmentTime(treatmentTimeRange('etp', false));
+  timeMfcOut.textContent = formatTreatmentTime(treatmentTimeRange('mfc', false));
 
   volumeInput.addEventListener('input', update);
   update();
