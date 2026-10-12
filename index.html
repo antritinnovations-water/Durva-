@@ -762,6 +762,12 @@
     return Math.max(25, 600 * Math.pow(Q / 3000, 0.9));
   }
 
+  // Neer Sentinel reactor throughput: 2,727 m3/hr sustained flow rate (NS-200 magnetic separation line).
+  var NEER_FLOW_RATE_M3_PER_HR = 2727;
+  function neerSentinelProcessingTime(Q) {
+    return Math.min(24, Q / NEER_FLOW_RATE_M3_PER_HR);
+  }
+
   function formatInt(n) {
     return Math.round(n).toLocaleString('en-US');
   }
@@ -801,7 +807,7 @@
     // Neer Sentinel
     var costNeer = costTrad * 0.3125; // 68.75% lower
     var kwhNeer = kwhTrad * 0.50;     // 40–60% lower, midpoint
-    var timeNeer = timeTrad * 0.05;   // 95%+ faster
+    var timeNeer = neerSentinelProcessingTime(volume); // throughput-based: volume / 2,727 m3/hr
     var footNeer = neerSentinelFootprint(volume);
 
     costTradOut.textContent = formatInt(costTrad);
