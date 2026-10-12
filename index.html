@@ -593,6 +593,7 @@
 
         <p class="font-body text-[14.5px] text-muted mt-6">At this volume, Neer Sentinel saves <span class="font-semibold text-offwhite">$<span id="savingsOut">13,500</span>/mo</span> and frees up <span class="font-semibold text-offwhite"><span id="timeOut">9.3</span> hrs/day</span> versus a conventional chemical ETP.</p>
         <p class="font-mono text-[11px] text-muted mt-4 leading-relaxed">Traditional ETP figures modeled from published industrial effluent-treatment energy audits and plant-footprint design guidance. Microbial fuel cell figures are modeled from peer-reviewed pilot-scale MFC studies — the technology remains largely unproven at industrial wastewater scale, and real-world results vary significantly by site and configuration. Treat all figures as planning estimates, not guarantees.</p>
+        <p class="font-mono text-[11px] text-muted mt-2 leading-relaxed">Land footprint: ETP calibrated to a 15 MLD textile CETP in Ludhiana (15,000 m&sup2;). MFC extrapolated from the most compact published pilot (1.4 m&sup3;); no full-scale MFC plant exists. Neer Sentinel figure is from our own engineering design and excludes brine-evaporator land.</p>
 
         <details class="mt-4 group">
           <summary class="font-mono text-[11px] text-emerald-bright cursor-pointer select-none inline-flex items-center gap-1.5 hover:text-offwhite transition-colors">
@@ -606,6 +607,9 @@
             <li><a href="https://digitalcommons.usu.edu/mae_stures/43" target="_blank" rel="noopener noreferrer" class="underline decoration-dotted hover:text-emerald-bright transition-colors">Techno-economic modeling of large-scale microbial fuel cell treatment — Utah State University</a></li>
             <li><a href="https://pubs.rsc.org/en/content/articlelanding/2016/ew/c6ew00020g" target="_blank" rel="noopener noreferrer" class="underline decoration-dotted hover:text-emerald-bright transition-colors">Pilot-scale microbial fuel cell energy balance study — RSC Environmental Science: Water Research &amp; Technology</a></li>
             <li><a href="https://sites.psu.edu/brucelogan/files/2022/03/2022-Rossi-etal-WatRes-pilot-MFC.pdf" target="_blank" rel="noopener noreferrer" class="underline decoration-dotted hover:text-emerald-bright transition-colors">850L air-cathode microbial fuel cell pilot at a treatment facility — Penn State (Logan Lab)</a></li>
+            <li><a href="https://www.greentribunal.gov.in/sites/default/files/news_updates/Reply%20of%20PPCB%20in%20Appeal%20No%2048%20of%202024%20(Bahadur%20ke%20Textiles%20Knitwear%20Association%20Vs.%20PPCB%20&%20Ors.).pdf" target="_blank" rel="noopener noreferrer" class="underline decoration-dotted hover:text-emerald-bright transition-colors">15 MLD textile CETP land area (15,000 m&sup2;), Ludhiana — Punjab Pollution Control Board, NGT filing</a></li>
+            <li><a href="https://www.netsolwater.com/how-much-land-is-required-for-a-100-kld-stp.php?blog=7135" target="_blank" rel="noopener noreferrer" class="underline decoration-dotted hover:text-emerald-bright transition-colors">Land required for a 100 KLD sewage treatment plant — Netsol Water</a></li>
+            <li><a href="https://arodes.hes-so.ch/record/9603/files/Blatter_2021_stretched_1000-L_microbial_fuel_cell.pdf" target="_blank" rel="noopener noreferrer" class="underline decoration-dotted hover:text-emerald-bright transition-colors">Stretched 1000-L microbial fuel cell footprint — HES-SO</a></li>
           </ul>
         </details>
       </div>
@@ -736,15 +740,39 @@
   // Modeled coefficients — see methodology note under the calculator table.
   var COST_PER_M3 = 0.80;      // $/m3, conventional chemical ETP (energy + chemicals + labor + sludge)
   var KWH_PER_M3 = 0.90;       // kWh/m3, conventional chemical ETP
-  var FOOTPRINT_PER_M3DAY = 0.35; // m2 per m3/day capacity, conventional chemical ETP
 
   var MFC_COST_MULT = 1.15;    // membrane + maintenance premium at current MFC maturity
   var MFC_KWH_MULT = 0.85;     // partial self-generation offsets grid draw, net effect is modest
   var MFC_TIME_MULT = 1.20;    // slower bioelectrochemical kinetics vs. activated sludge
-  var MFC_FOOTPRINT_MULT = 1.60; // low power density per m2 requires larger reactor area
+
+  // Land footprint (m2), Q = daily wastewater volume (m3/day). See sources below the calculator.
+  // Traditional ETP: calibrated to a real 15 MLD textile CETP (15,000 m2); small plants need
+  // more land per m3, so below 15 MLD a 0.78 scale exponent is applied.
+  function etpFootprint(Q) {
+    var mld = Q / 1000;
+    return 1000 * mld * Math.max(1, Math.pow(15 / mld, 0.22));
+  }
+  // MFC: extrapolated from the most compact published pilot (1.30 m2 of reactor per m3/day),
+  // x1.5 for equalization, pre/post-treatment and access. No full-scale MFC plant exists.
+  function mfcFootprint(Q) {
+    return 1.30 * Q * 1.5;
+  }
+  // Neer Sentinel: our own engineering estimate — ~600 m2 at 3,000 m3/day, ~10,000 m2 at 65,000 m3/day.
+  function neerSentinelFootprint(Q) {
+    return Math.max(25, 600 * Math.pow(Q / 3000, 0.9));
+  }
 
   function formatInt(n) {
     return Math.round(n).toLocaleString('en-US');
+  }
+
+  function formatSig2(n) {
+    if (n === 0) return '0';
+    var d = Math.ceil(Math.log10(Math.abs(n)));
+    var power = 2 - d;
+    var magnitude = Math.pow(10, power);
+    var rounded = Math.round(n * magnitude) / magnitude;
+    return formatInt(rounded);
   }
 
   function fillPercent(input) {
@@ -762,19 +790,19 @@
     var costTrad = monthlyVolume * COST_PER_M3;
     var kwhTrad = monthlyVolume * KWH_PER_M3;
     var timeTrad = Math.min(24, 6 + volume / 200);
-    var footTrad = volume * FOOTPRINT_PER_M3DAY;
+    var footTrad = etpFootprint(volume);
 
     // Microbial Fuel Cell
     var costMfc = costTrad * MFC_COST_MULT;
     var kwhMfc = kwhTrad * MFC_KWH_MULT;
     var timeMfc = Math.min(24, timeTrad * MFC_TIME_MULT);
-    var footMfc = footTrad * MFC_FOOTPRINT_MULT;
+    var footMfc = mfcFootprint(volume);
 
     // Neer Sentinel
     var costNeer = costTrad * 0.3125; // 68.75% lower
     var kwhNeer = kwhTrad * 0.50;     // 40–60% lower, midpoint
     var timeNeer = timeTrad * 0.05;   // 95%+ faster
-    var footNeer = footTrad * 0.225;  // 70–85% smaller, midpoint
+    var footNeer = neerSentinelFootprint(volume);
 
     costTradOut.textContent = formatInt(costTrad);
     costMfcOut.textContent = formatInt(costMfc);
@@ -788,9 +816,9 @@
     timeMfcOut.textContent = timeMfc.toFixed(1);
     timeNeerOut.textContent = timeNeer.toFixed(1);
 
-    footTradOut.textContent = formatInt(footTrad);
-    footMfcOut.textContent = formatInt(footMfc);
-    footNeerOut.textContent = formatInt(footNeer);
+    footTradOut.textContent = formatSig2(footTrad);
+    footMfcOut.textContent = formatSig2(footMfc);
+    footNeerOut.textContent = formatSig2(footNeer);
 
     savingsOut.textContent = formatInt(costTrad - costNeer);
     timeOut.textContent = (timeTrad - timeNeer).toFixed(1);
