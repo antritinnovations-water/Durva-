@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>System — Neer Sentinel — Durva Research Lab</title>
+<meta name="description" content="The AIoT monitoring layer behind every Neer Sentinel reactor: inline sensing, an AI anomaly engine, an LLM co-pilot, and immutable compliance logging." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          ink:      '#FFFFFF',
+          surface:  '#F3F8FD',
+          surface2: '#E8F2FC',
+          line:     'rgba(15,35,65,0.10)',
+          emerald:  { DEFAULT:'#0EA5E9', bright:'#0284C7', dim:'#BAE6FD' },
+          offwhite: '#0B1A2E',
+          muted:    '#5B6B82',
+          coral:    '#C2410C',
+        },
+        fontFamily: {
+          display: ['"Plus Jakarta Sans"','system-ui','sans-serif'],
+          body: ['"IBM Plex Sans"','system-ui','sans-serif'],
+          mono: ['"IBM Plex Mono"','ui-monospace','SFMono-Regular','monospace'],
+        },
+      }
+    }
+  }
+</script>
+<style>
+  :root { color-scheme: light; }
+  html, body { background:#FFFFFF; }
+  body { font-family:'IBM Plex Sans', system-ui, sans-serif; }
+  .font-display { font-family:'Plus Jakarta Sans', system-ui, sans-serif; }
+  .font-mono { font-family:'IBM Plex Mono', ui-monospace, monospace; }
+
+  h1, h2, h3 { text-wrap: balance; }
+
+  .bg-grid {
+    background-image:
+      radial-gradient(130% 100% at 18% -15%, #EAF7FF 0%, #BEE7FB 42%, #82CEF3 100%),
+      linear-gradient(rgba(2,54,108,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(2,54,108,0.035) 1px, transparent 1px);
+    background-size: 100% 100%, 48px 48px, 48px 48px;
+    background-position: 0 0, 0 0, 0 0;
+    animation: water-drift 22s ease-in-out infinite alternate;
+  }
+  @keyframes water-drift {
+    0%   { background-position: 0% 0%, 0 0, 0 0; }
+    100% { background-position: 4% 3%, 0 0, 0 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .bg-grid { animation: none; }
+  }
+
+  .glow-text {
+    background: linear-gradient(90deg, #0EA5E9 0%, #0369A1 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .card-surface {
+    background: linear-gradient(165deg, #FFFFFF 0%, #F3F8FD 100%);
+    border: 1px solid rgba(15,35,65,0.08);
+    box-shadow: 0 20px 44px -30px rgba(15,35,65,0.28);
+  }
+  .card-surface:hover { border-color: rgba(14,165,233,0.45); }
+
+  a:focus-visible, button:focus-visible { outline: 2px solid #0EA5E9; outline-offset: 2px; }
+
+  .nav-link { position: relative; }
+  .nav-link::after {
+    content: ""; position: absolute; left:0; bottom:-6px; height:1px; width:0;
+    background:#0EA5E9; transition: width .2s ease;
+  }
+  .nav-link:hover::after { width: 100%; }
+  .nav-link.on::after { width: 100%; }
+  .nav-link.on { color: #0B1A2E; }
+
+  .pipe-arrow { color: #0284C7; }
+</style>
+</head>
+<body class="bg-ink text-offwhite antialiased">
+
+  <!-- NAV -->
+  <header class="fixed top-0 inset-x-0 z-50 border-b border-line bg-ink/80 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
+      <a href="index.html#top" class="flex items-center gap-2.5 shrink-0">
+        <img src="durva-logo-icon.png" alt="Durva Research Lab" class="w-8 h-8 object-contain" />
+        <span class="font-display font-bold text-[15px] tracking-tight leading-none">Neer Sentinel</span>
+      </a>
+      <nav class="hidden md:flex items-center gap-8 font-body font-semibold text-[12.5px] tracking-tight text-muted">
+        <a href="index.html#top" class="nav-link hover:text-offwhite transition-colors">Home</a>
+        <a href="index.html#problem" class="nav-link hover:text-offwhite transition-colors">The Problem</a>
+        <a href="system.html" class="nav-link on hover:text-offwhite transition-colors">System</a>
+        <a href="index.html#mission" class="nav-link hover:text-offwhite transition-colors">Mission</a>
+      </nav>
+      <a href="index.html#demo" class="shrink-0 font-body font-semibold text-[13px] px-4 py-2 rounded-full bg-emerald text-ink hover:bg-emerald-bright transition-colors">
+        Request a Pilot Demo
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <!-- PAGE HERO -->
+    <section class="relative overflow-hidden bg-grid pt-32 pb-20 sm:pt-40 sm:pb-24 px-5 sm:px-8">
+      <div aria-hidden="true" class="pointer-events-none absolute -top-40 right-[-10%] w-[560px] h-[560px] rounded-full bg-emerald/10 blur-3xl"></div>
+      <div class="max-w-4xl mx-auto relative">
+        <p class="font-body font-bold text-[12px] uppercase tracking-[0.22em] text-emerald-bright mb-5 flex items-center gap-2">
+          <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-bright"></span>
+          Technical Overview
+        </p>
+        <h1 class="font-display font-extrabold text-[2.1rem] sm:text-5xl leading-[1.08] tracking-tight mb-6">
+          The AI monitoring layer behind every reactor.
+        </h1>
+        <p class="font-body text-[16.5px] sm:text-lg text-muted max-w-2xl leading-relaxed">
+          Neer Sentinel's passive magnetic core does the separation. Alongside it, a continuous sensing and AI layer watches every stage of the cycle — turning raw reactor telemetry into predictive maintenance, conversational insight, and audit-ready compliance records.
+        </p>
+      </div>
+    </section>
+
+    <!-- THE CONCEPT -->
+    <section class="px-5 sm:px-8 py-20 sm:py-28 border-b border-line" style="background:#F2F7FC;">
+      <div class="max-w-7xl mx-auto">
+        <div class="max-w-2xl mb-14">
+          <p class="font-body font-bold text-[12px] uppercase tracking-[0.22em] mb-4" style="color:#0284C7;">The Concept</p>
+          <h2 class="font-display font-bold text-3xl sm:text-4xl tracking-tight" style="color:#0B1A2E;">Inline sensing, not a bolt-on network.</h2>
+          <p class="font-body text-[15px] text-muted mt-5 leading-relaxed">Rather than scattering sensor nodes across a facility, Neer Sentinel's array lives inside the reactor itself — reading the water at every stage it passes through.</p>
+        </div>
+        <div class="grid sm:grid-cols-3 gap-5">
+          <div class="card-surface rounded-2xl p-7">
+            <span class="inline-flex items-center justify-center w-9 h-9 rounded-full font-mono text-[13px] font-semibold mb-5" style="background:#E0F2FE; color:#0284C7;">01</span>
+            <h3 class="font-display font-semibold text-lg mb-3" style="color:#0B1A2E;">Inlet</h3>
+            <p class="font-body text-[14px] text-muted leading-relaxed">Raw effluent is read for flow rate, pH, turbidity and TDS the moment it enters the unit, before any treatment begins.</p>
+          </div>
+          <div class="card-surface rounded-2xl p-7">
+            <span class="inline-flex items-center justify-center w-9 h-9 rounded-full font-mono text-[13px] font-semibold mb-5" style="background:#E0F2FE; color:#0284C7;">02</span>
+            <h3 class="font-display font-semibold text-lg mb-3" style="color:#0B1A2E;">Magnetic Matrix</h3>
+            <p class="font-body text-[14px] text-muted leading-relaxed">Sensors track how much pollutant load the matrix has captured, so backwash cycles are triggered by actual saturation, not a fixed timer.</p>
+          </div>
+          <div class="card-surface rounded-2xl p-7">
+            <span class="inline-flex items-center justify-center w-9 h-9 rounded-full font-mono text-[13px] font-semibold mb-5" style="background:#E0F2FE; color:#0284C7;">03</span>
+            <h3 class="font-display font-semibold text-lg mb-3" style="color:#0B1A2E;">RO &amp; Outlet</h3>
+            <p class="font-body text-[14px] text-muted leading-relaxed">Membrane pressure and treated-water quality are checked against the inlet reading to confirm every cycle meets discharge targets.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SENSING CAPABILITY -->
+    <section class="px-5 sm:px-8 py-20 sm:py-28 border-b border-line">
+      <div class="max-w-7xl mx-auto">
+        <div class="max-w-2xl mb-14">
+          <p class="font-body font-bold text-[12px] uppercase tracking-[0.22em] text-emerald-bright mb-4">Sensing Capability</p>
+          <h2 class="font-display font-bold text-3xl sm:text-4xl tracking-tight" style="color:#0B1A2E;">Parameters monitored.</h2>
+          <p class="font-body text-[15px] text-muted mt-5 leading-relaxed">Multi-parameter telemetry streamed continuously from every Neer Sentinel unit in the field.</p>
+        </div>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div class="card-surface rounded-2xl p-7">
+            <svg width="30" height="30" viewBox="0 0 30 30" fill="none" class="mb-5" aria-hidden="true">
+              <path d="M15 4c4 5.5 7 9.6 7 13.2 0 4.2-3.1 7.3-7 7.3s-7-3.1-7-7.3C8 13.6 11 9.5 15 4Z" stroke="#0284C7" stroke-width="1.6" stroke-linejoin="round"/>
+            </svg>
+            <h3 class="font-display font-semibold text-[15.5px] mb-2" style="color:#0B1A2E;">pH &amp; Conductivity</h3>
+            <p class="font-body text-[13.5px] text-muted leading-snug">Confirms inline acid/base dosing lands exactly on target.</p>
+          </div>
+          <div class="card-surface rounded-2xl p-7">
+            <svg width="30" height="30" viewBox="0 0 30 30" fill="none" class="mb-5" aria-hidden="true">
+              <path d="M4 12c3-3.5 6-3.5 9 0s6 3.5 9 0M4 18c3-3.5 6-3.5 9 0s6 3.5 9 0" stroke="#0284C7" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+            <h3 class="font-display font-semibold text-[15.5px] mb-2" style="color:#0B1A2E;">Turbidity</h3>
+            <p class="font-body text-[13.5px] text-muted leading-snug">Flags separation efficiency in real time, before output leaves the unit.</p>
+          </div>
+          <div class="card-surface rounded-2xl p-7">
+            <svg width="30" height="30" viewBox="0 0 30 30" fill="none" class="mb-5" aria-hidden="true">
+              <circle cx="9" cy="10" r="2.1" stroke="#0284C7" stroke-width="1.6"/>
+              <circle cx="20" cy="9" r="1.6" stroke="#0284C7" stroke-width="1.6"/>
+              <circle cx="21" cy="19" r="2.3" stroke="#0284C7" stroke-width="1.6"/>
+              <circle cx="10" cy="20" r="1.5" stroke="#0284C7" stroke-width="1.6"/>
+            </svg>
+            <h3 class="font-display font-semibold text-[15.5px] mb-2" style="color:#0B1A2E;">TDS</h3>
+            <p class="font-body text-[13.5px] text-muted leading-snug">Total dissolved solids measured before and after each cycle.</p>
+          </div>
+          <div class="card-surface rounded-2xl p-7">
+            <svg width="30" height="30" viewBox="0 0 30 30" fill="none" class="mb-5" aria-hidden="true">
+              <path d="M15 5c6 3 8 7 8 11a8 8 0 1 1-16 0c0-4 2-8 8-11Z" stroke="#0284C7" stroke-width="1.6" stroke-linejoin="round"/>
+              <path d="M15 12v10" stroke="#0284C7" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+            <h3 class="font-display font-semibold text-[15.5px] mb-2" style="color:#0B1A2E;">COD / BOD</h3>
+            <p class="font-body text-[13.5px] text-muted leading-snug">Derived organic-load metrics tracked across the treatment cycle.</p>
+          </div>
+          <div class="card-surface rounded-2xl p-7">
+            <svg width="30" height="30" viewBox="0 0 30 30" fill="none" class="mb-5" aria-hidden="true">
+              <circle cx="15" cy="16" r="9" stroke="#0284C7" stroke-width="1.6"/>
+              <path d="M15 16 19 11" stroke="#0284C7" stroke-width="1.6" stroke-linecap="round"/>
+              <path d="M10 6h10" stroke="#0284C7" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+            <h3 class="font-display font-semibold text-[15.5px] mb-2" style="color:#0B1A2E;">Flow Rate &amp; Pressure</h3>
+            <p class="font-body text-[13.5px] text-muted leading-snug">Confirms throughput against the unit's 2,727 m&sup3;/hr design rate.</p>
+          </div>
+          <div class="card-surface rounded-2xl p-7">
+            <svg width="30" height="30" viewBox="0 0 30 30" fill="none" class="mb-5" aria-hidden="true">
+              <path d="M9 5v9a6 6 0 0 0 12 0V5" stroke="#0284C7" stroke-width="1.6" stroke-linecap="round"/>
+              <path d="M9 5H6M21 5h-3M9 24v-5M21 24v-5" stroke="#0284C7" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+            <h3 class="font-display font-semibold text-[15.5px] mb-2" style="color:#0B1A2E;">Magnetic Matrix Saturation</h3>
+            <p class="font-body text-[13.5px] text-muted leading-snug">Signals the exact point backwash is due — no fixed schedule guesswork.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FROM SIGNAL TO ACTION -->
+    <section class="px-5 sm:px-8 py-20 sm:py-28 border-b border-line" style="background:#F2F7FC;">
+      <div class="max-w-5xl mx-auto text-center">
+        <p class="font-body font-bold text-[12px] uppercase tracking-[0.22em] mb-4" style="color:#0284C7;">System Architecture</p>
+        <h2 class="font-display font-bold text-3xl sm:text-4xl tracking-tight mb-4" style="color:#0B1A2E;">From signal to action.</h2>
+        <p class="font-body text-[15px] text-muted mb-12 max-w-xl mx-auto leading-relaxed">A seamless flow from reactor telemetry to a decision an operator can act on.</p>
+
+        <div class="card-surface rounded-2xl p-6 sm:p-8 mb-8">
+          <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+            <span class="font-body font-semibold text-[14px] px-4 py-2 rounded-full border border-line" style="color:#0B1A2E;">Sensor</span>
+            <span class="pipe-arrow font-semibold">&rarr;</span>
+            <span class="font-body font-semibold text-[14px] px-4 py-2 rounded-full border border-line" style="color:#0B1A2E;">Edge</span>
+            <span class="pipe-arrow font-semibold">&rarr;</span>
+            <span class="font-body font-semibold text-[14px] px-4 py-2 rounded-full border border-line" style="color:#0B1A2E;">AI Engine</span>
+            <span class="pipe-arrow font-semibold">&rarr;</span>
+            <span class="font-body font-semibold text-[14px] px-4 py-2 rounded-full border border-line" style="color:#0B1A2E;">Co-Pilot</span>
+            <span class="pipe-arrow font-semibold">&rarr;</span>
+            <span class="font-body font-semibold text-[14px] px-4 py-2 rounded-full border border-line" style="color:#0B1A2E;">Blockchain Log</span>
+          </div>
+        </div>
+
+        <div class="card-surface rounded-2xl p-8 sm:p-10">
+          <p class="font-display font-bold text-xl sm:text-2xl tracking-tight" style="color:#0B1A2E;">Telemetry <span class="pipe-arrow">&rarr;</span> Prediction <span class="pipe-arrow">&rarr;</span> Uptime</p>
+          <p class="font-body text-[14.5px] text-muted mt-4 leading-relaxed">Turning raw reactor signals into a maintenance decision before a failure ever happens.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- KEY FEATURES -->
+    <section class="px-5 sm:px-8 py-20 sm:py-28 border-b border-line">
+      <div class="max-w-5xl mx-auto text-center">
+        <p class="font-body font-bold text-[12px] uppercase tracking-[0.22em] text-emerald-bright mb-4">Key Features</p>
+        <h2 class="font-display font-bold text-3xl sm:text-4xl tracking-tight mb-14" style="color:#0B1A2E;">What makes this different.</h2>
+        <div class="grid sm:grid-cols-3 gap-10">
+          <div>
+            <span class="inline-flex items-center justify-center w-16 h-16 rounded-full font-mono text-[15px] font-bold mb-5" style="background:#E0F2FE; color:#0284C7;">24/7</span>
+            <h3 class="font-display font-semibold text-lg mb-2" style="color:#0B1A2E;">Continuous</h3>
+            <p class="font-body text-[14px] text-muted leading-relaxed">Sensor streams run without gaps — no manual sampling, no missed readings.</p>
+          </div>
+          <div>
+            <span class="inline-flex items-center justify-center w-16 h-16 rounded-full font-mono text-[13px] font-bold mb-5" style="background:#E0F2FE; color:#0284C7;">AI</span>
+            <h3 class="font-display font-semibold text-lg mb-2" style="color:#0B1A2E;">Predictive</h3>
+            <p class="font-body text-[14px] text-muted leading-relaxed">Anomalies and maintenance needs are flagged before they cause downtime.</p>
+          </div>
+          <div>
+            <span class="inline-flex items-center justify-center w-16 h-16 rounded-full font-mono text-[12px] font-bold mb-5" style="background:#E0F2FE; color:#0284C7;">ON-CHAIN</span>
+            <h3 class="font-display font-semibold text-lg mb-2" style="color:#0B1A2E;">Audit-Proof</h3>
+            <p class="font-body text-[14px] text-muted leading-relaxed">Every compliance log is inscribed immutably for transparent, tamper-proof records.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="px-5 sm:px-8 py-20 sm:py-24 bg-grid relative overflow-hidden">
+      <div aria-hidden="true" class="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-emerald/10 blur-3xl"></div>
+      <div class="max-w-xl mx-auto text-center relative">
+        <h2 class="font-display font-bold text-2xl sm:text-3xl tracking-tight mb-5">See the monitoring layer on a live unit.</h2>
+        <a href="index.html#demo" class="inline-block font-body font-semibold text-[15px] px-6 py-3.5 rounded-full bg-emerald text-ink hover:bg-emerald-bright transition-colors">
+          Request a Pilot Demo
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="px-5 sm:px-8 py-10 border-t border-line">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-5">
+      <div class="flex items-center gap-2.5">
+        <img src="durva-logo-icon.png" alt="Durva Research Lab" class="w-6 h-6 object-contain" />
+        <span class="font-body text-[13px] text-muted">Neer Sentinel &middot; Durva Research Lab &copy; 2026</span>
+      </div>
+      <nav class="flex gap-6 font-body text-[13px] text-muted">
+        <a href="index.html#metrics" class="hover:text-offwhite transition-colors">Performance</a>
+        <a href="mailto:info@durvalabs.com" class="hover:text-offwhite transition-colors">info@durvalabs.com</a>
+      </nav>
+    </div>
+  </footer>
+
+</body>
+</html>
